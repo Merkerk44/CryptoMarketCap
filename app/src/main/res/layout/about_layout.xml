@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/about_dialog_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:padding="10dp">
+
+    <TextView android:id="@+id/developerTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="@string/developed_by_zeykit_dev"
+        android:textColor="@android:color/white"
+        android:paddingTop="25dp"
+        android:paddingBottom="10dp"/>
+
+    <TextView
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="@string/market_data_from"
+        android:textColor="@color/colorTitle"
+        android:paddingBottom="10dp"/>
+
+    <TextView android:id="@+id/joinCommunityTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="@string/join_community"
+        android:textColor="@android:color/white"
+        android:paddingBottom="30dp"/>
+
+    <TextView
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="@string/donate_to_developer"
+        android:textColor="@android:color/white"
+        android:paddingBottom="15dp"/>
+
+    <TextView android:id="@+id/btcTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="@string/btc_address"
+        android:textColor="@color/colorTitle"
+        android:paddingBottom="10dp"/>
+
+    <TextView android:id="@+id/ethTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="@string/eth_address"
+        android:textColor="@android:color/white"
+        android:paddingBottom="30dp"/>
+
+    <TextView android:id="@+id/checkForUpdateTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@color/gray"
+        android:paddingBottom="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end">
+
+        <Button android:theme="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:id="@+id/aboutGotItButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorSummary"
+            android:text="@string/got_it"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/refreshing_preference_title"
+        android:key="pref_refreshing_settings">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="auto_refresh_switch"
+            android:title="@string/auto_refresh_preference_title"
+            android:summary="@string/auto_refresh_summary"/>
+
+        <EditTextPreference
+            android:defaultValue="60"
+            android:key="auto_refresh_delay"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/auto_refresh_delay"
+            android:summary="@string/auto_refresh_delay_summary"
+            android:dependency="auto_refresh_switch"/>
+    </PreferenceCategory>
+</PreferenceScreen>

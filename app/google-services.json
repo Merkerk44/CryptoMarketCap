@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "591671865571",
+    "firebase_url": "https://cryptomarketcap-e2d4f.firebaseio.com",
+    "project_id": "cryptomarketcap-e2d4f",
+    "storage_bucket": "cryptomarketcap-e2d4f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591671865571:android:79309193f1ef7370",
+        "android_client_info": {
+          "package_name": "com.zeykit.dev.cryptomarketcap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "591671865571-j0055crk43qnjr7u75ldiev4re7p7d31.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeykit.dev.cryptomarketcap",
+            "certificate_hash": "bad1c70c01530c0ff8e5af294acfa51f36ae17a2"
+          }
+        },
+        {
+          "client_id": "591671865571-ptofohc2p68386qqm42tjlkeb241l2hh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuAr61t_24Dzv1mwRDOBA9X68VkZJPRSQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "591671865571-ptofohc2p68386qqm42tjlkeb241l2hh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

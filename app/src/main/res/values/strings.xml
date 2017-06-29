@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Crypto Market Cap</string>
+    <string name="app_version">1.0.0</string>
+    <string name="action_search">Search</string>
+    <string name="action_about">About</string>
+    <string name="action_settings">Settings</string>
+    <string name="icon">Icon</string>
+    <string name="search_hint">Crypto\'s name/symbol &#8230;</string>
+    <string name="receiving_data">Receiving data&#8230;</string>
+    <string name="refreshing_preference_title">Refreshing Settings</string>
+    <string name="auto_refresh_preference_title">Auto refresh</string>
+    <string name="auto_refresh_summary">Update automatically the market cap data</string>
+    <string name="auto_refresh_delay">Auto refresh delay</string>
+    <string name="auto_refresh_delay_summary">Define the auto refresh delay (in seconds)</string>
+    <string name="network_state_permission">You need to enable network state access permission to make this app working. Go to your apps settings to activate it.</string>
+    <string name="internet_permission">You need to enable Internet access permission to make this app working. Go to your apps settings to activate it.</string>
+    <string name="request_connection">You need to be connected to Wi-Fi or enable mobile data.</string>
+    <string name="got_it">GOT IT</string>
+    <string name="developed_by_zeykit_dev">Developed by Zeykit-Dev</string>
+    <string name="market_data_from">Market cap data are from CoinMarketCap.com</string>
+    <string name="join_community">Join www.labaleine.gg : french cryptocurrencies community</string>
+    <string name="donate_to_developer">Donate to developer (thanks you !)</string>
+    <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
+    <string name="eth_address">ETH : 0xe4c26694bcb02b498e67e8059a174e3998d1cd2c</string>
+    <string name="etc_address">ETC : 0x070beae2fd4ba17e354600938d853f71efc97f88</string>
+    <string name="zec_address">ZEC : t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
+    <string name="sc_address">SC : b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7</string>
+    <string name="app_not_found">Unable to find a browsing app</string>
+    <string name="copied_to_clipboard">address copied to clipboard</string>
+    <string name="current_version">Current version</string>
+    <string name="check_for_updates">Check for updates</string>
+    <string name="currency_list_title">Default currency</string>
+    <string name="currency_list_summary">Choose the currency you want to be displayed</string>
+    
+    <string-array name="currencies_list">
+        <item>USD</item>
+        <item>EUR</item>
+        <item>GBP</item>
+    </string-array>
+</resources>
