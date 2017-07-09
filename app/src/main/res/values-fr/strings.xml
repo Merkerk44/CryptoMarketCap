@@ -12,8 +12,8 @@
     <string name="auto_refresh_summary">Met à jour les données du marché automatiquement</string>
     <string name="auto_refresh_delay">Temps entre chaque actualisation</string>
     <string name="auto_refresh_delay_summary">Définie le temps entre chaque actualisation (en secondes)</string>
-    <string name="network_state_permission">Vous devez activer la permission d\'accès au status du réseau pour que cette application fonctionne. Allez dans vos paramètres d'applications pour l'activer.</string>
-    <string name="internet_permission">Vous devez activer la permission d\'accès à Internet pour que cette application fonctionne. Allez dans vos paramètres d'applications pour l'activer.</string>
+    <string name="network_state_permission">Vous devez activer la permission d\'accès au status du réseau pour que cette application fonctionne. Allez dans vos paramètres d\'applications pour l\'activer.</string>
+    <string name="internet_permission">Vous devez activer la permission d\'accès à Internet pour que cette application fonctionne. Allez dans vos paramètres d\'applications pour l\'activer.</string>
     <string name="request_connection">Vous devez être connecté à un réseau Wi-Fi ou activer les données mobile.</string>
     <string name="got_it">COMPRIS</string>
     <string name="developed_by_zeykit_dev">Développé par Zeykit-Dev</string>
@@ -31,6 +31,16 @@
     <string name="check_for_updates">Vérifiez les mises à jour</string>
     <string name="currency_list_title">Devise par défaut</string>
     <string name="currency_list_summary">Définissez la devise que vous souhaitez afficher</string>
+    <string name="pinned_coins">Monnaies épinglées</string>
+    <string name="array_size">Taille de la liste des crypto-monnaies à afficher</string>
+    <string name="array_size_summary">Définissez le nombre de crypto-monnaies qui seront affichées</string>
+    <string name="price">Prix</string>
+    <string name="volume">Volume (24H)</string>
+    <string name="market_cap">Market Cap</string>
+    <string name="circulating_supply">Circulating supply</string>
+    <string name="percent_change_1h">Percent change (1H)</string>
+    <string name="percent_change_24h">Percent change (24H)</string>
+    <string name="percent_change_7d">Percent change (7J)</string>
 
     <string-array name="currencies_list">
         <item>USD</item>

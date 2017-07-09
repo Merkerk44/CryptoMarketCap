@@ -251,13 +251,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_pinned_coins:
+                Intent pinnedIntent = new Intent(getApplicationContext(), PinnedCoinsActivity.class);
+                startActivity(pinnedIntent);
+                break;
             case R.id.action_about:
                 AboutDialog aboutDialog = new AboutDialog();
                 aboutDialog.show(getSupportFragmentManager(), null);
                 break;
             case R.id.action_settings:
-                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(intent);
+                Intent settingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -309,9 +313,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         final List<CryptoAdapter> filteredCryptoList = new ArrayList<>();
         for (CryptoAdapter crypto : cryptoAdapterList) {
             final String text = crypto.getName().toLowerCase();
-            if (text.contains(query)) {
+            if (text.contains(query))
                 filteredCryptoList.add(crypto);
-            }
         }
         return filteredCryptoList;
     }
@@ -320,7 +323,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         boolean connectionEnabled = haveNetworkConnection();
 
-        private final String urlAddress = "https://api.coinmarketcap.com/v1/ticker/?limit=70";
+        private String defaultCurrency = getDefaultCurrency();
+        private final String urlAddress = "https://api.coinmarketcap.com/v1/ticker/?convert=" + defaultCurrency + "&limit=" + arraySizeToDisplay();
 
         private ProgressDialog progressDialog;
 
@@ -347,9 +351,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 progressDialog.setIndeterminate(true);
                 progressDialog.setMessage(getString(R.string.receiving_data));
 
-                if (isRunning) {
+                if (isRunning)
                     progressDialog.show();
-                }
 
                 cryptoAdapterList.clear();
                 adapter.notifyDataSetChanged();
@@ -370,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             HttpURLConnection connection;
             BufferedReader reader;
 
-            if (connectionEnabled) {
+            if (connectionEnabled && isRunning) {
                 try {
                     URL url = new URL(urlAddress);
                     connection = (HttpURLConnection) url.openConnection();
@@ -407,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
          */
         @Override
         protected void onPostExecute(String result) {
-            if (connectionEnabled) {
+            if (connectionEnabled && isRunning) {
                 try {
                     jArray = new JSONArray(buffer.toString());
 
@@ -418,7 +421,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         rank = String.valueOf(_rank);
                         name = jObj.getString(TAG.NAME);
                         symbol = "(" + jObj.getString(TAG.SYMBOL) + ")";
-                        price = "$" + jObj.getString(TAG.PRICE_USD);
+
+                        switch (defaultCurrency) {
+                            case "USD":
+                                price = "$" + jObj.getString(TAG.PRICE_USD);
+                                break;
+                            case "EUR":
+                                price = "€" + jObj.getString(TAG.PRICE_EUR);
+                                break;
+                            case "GBP":
+                                price = "£" + jObj.getString(TAG.PRICE_GBP);
+                                break;
+                        }
 
                         percentChange = jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
 
@@ -434,13 +448,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             }
 
-            if (progressDialog != null) {
+            if (progressDialog != null)
                 progressDialog.dismiss();
-            }
 
-            if (swipeRefreshLayout != null) {
+            if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);
-            }
         }
     }
 
@@ -459,13 +471,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
         for (NetworkInfo ni : networkInfo) {
             if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-                if (ni.isConnected()) {
+                if (ni.isConnected())
                     wifiConnected = true;
-                }
             } else if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected()) {
+                if (ni.isConnected())
                     dataConnected = true;
-                }
             }
         }
         return wifiConnected || dataConnected;
@@ -510,5 +520,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
      */
     private String autoRefreshDelay() {
         return sharedPreferences.getString("auto_refresh_delay", "60");
+    }
+
+    private String getDefaultCurrency() {
+        return sharedPreferences.getString("currency_list_preference", "USD");
+    }
+
+    private String arraySizeToDisplay() {
+        return sharedPreferences.getString("array_size", "100");
     }
 }

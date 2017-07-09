@@ -6,7 +6,12 @@
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/action_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always|collapseActionView"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
+
+    <item android:id="@+id/action_pinned_coins"
+        android:title="@string/pinned_coins"
+        android:icon="@drawable/ic_pinned"
+        app:showAsAction="ifRoom|collapseActionView"/>
 
     <item android:id="@+id/action_about"
         android:title="@string/action_about"

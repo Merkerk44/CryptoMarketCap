@@ -1,62 +1,87 @@
 package com.zeykit.dev.cryptomarketcap;
 
-import android.content.Intent;
-import android.graphics.Color;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CryptoViewHolder extends RecyclerView.ViewHolder {
+public class AboutCryptoViewHolder extends RecyclerView.ViewHolder {
 
     private TextView mRankTextView;
     private ImageView mIconImageView;
     private TextView mNameTextView;
     private TextView mPriceTextView;
-    private TextView mPercentChangeTextView;
+    private TextView mMarketCap;
+    private TextView mCirculatingSupply;
+    private TextView mVolume;
+    private TextView mPercentChange1h;
+    private TextView mPercentChange24h;
+    private TextView mPercentChange7d;
+    Context context;
 
-    public CryptoViewHolder(View v) {
+    public AboutCryptoViewHolder(View v) {
         super(v);
 
-        mRankTextView = (TextView) v.findViewById(R.id.rankTextView);
-        mIconImageView = (ImageView) v.findViewById(R.id.iconImageView);
-        mNameTextView = (TextView) v.findViewById(R.id.nameTextView);
-        mPriceTextView = (TextView) v.findViewById(R.id.priceTextView);
-        mPercentChangeTextView = (TextView) v.findViewById(R.id.percentChangeTextView);
+        context = v.getContext();
 
-        v.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                MoreAboutCryptoDialog.selectedCrypto = mNameTextView.getText().toString();
-
-                Intent intent = new Intent(v.getContext(),
-                        MoreAboutCryptoDialog.class);
-                v.getContext().startActivity(intent);
-                return true;
-            }
-        });
+        mRankTextView = (TextView) v.findViewById(R.id.cryptoAboutRank);
+        mIconImageView = (ImageView) v.findViewById(R.id.cryptoAboutIcon);
+        mNameTextView = (TextView) v.findViewById(R.id.cryptoAboutName);
+        mPriceTextView = (TextView) v.findViewById(R.id.cryptoAboutPrice);
+        mMarketCap = (TextView) v.findViewById(R.id.cryptoAboutMarketCap);
+        mCirculatingSupply = (TextView) v.findViewById(R.id.cryptoAboutCirculatingSupply);
+        mVolume = (TextView) v.findViewById(R.id.cryptoAboutVolume);
+        mPercentChange1h = (TextView) v.findViewById(R.id.cryptoAboutPercentChange1h);
+        mPercentChange24h = (TextView) v.findViewById(R.id.cryptoAboutPercentChange24h);
+        mPercentChange7d = (TextView) v.findViewById(R.id.cryptoAboutPercentChange7d);
     }
 
-    public void bind(CryptoAdapter cryptoAdapter) {
+    public void bind(AboutCryptoAdapter aboutCryptoAdapter) {
 
-        mRankTextView.setText(cryptoAdapter.getRank());
-        mIconImageView.setImageDrawable(cryptoAdapter.getIcon());
-        mNameTextView.setText(cryptoAdapter.getName());
-        mPriceTextView.setText(cryptoAdapter.getPrice());
-        mPercentChangeTextView.setText(cryptoAdapter.getPercentChange());
+        mRankTextView.setText(aboutCryptoAdapter.getRank());
+        mIconImageView.setImageDrawable(aboutCryptoAdapter.getIcon());
+        mNameTextView.setText(aboutCryptoAdapter.getName());
+        mPriceTextView.setText(aboutCryptoAdapter.getPrice());
+        mMarketCap.setText(aboutCryptoAdapter.getMarketCap());
+        mCirculatingSupply.setText(aboutCryptoAdapter.getCirculatingSupply());
+        mVolume.setText(aboutCryptoAdapter.getVolume());
+        mPercentChange1h.setText(aboutCryptoAdapter.getPercentChange1h());
+        mPercentChange24h.setText(aboutCryptoAdapter.getPercentChange24h());
+        mPercentChange7d.setText(aboutCryptoAdapter.getPercentChange7d());
 
-        String mPercentChange = cryptoAdapter.getPercentChange();
-        if (mPercentChange.contains("-")) {
-            mPercentChangeTextView.setTextColor(Color.parseColor("#ff3333"));
-        } else if (mPercentChange.equals("0.0%")) {
-            mPercentChangeTextView.setTextColor(Color.parseColor("#ffffff"));
-        } else {
-            String percentChange = "+" + cryptoAdapter.getPercentChange();
-            mPercentChangeTextView.setText(percentChange);
-            mPercentChangeTextView.setTextColor(Color.parseColor("#00ff55"));
+        String mPercentChange1hStr = aboutCryptoAdapter.getPercentChange1h();
+        String[] mPercentChange1hSplit = mPercentChange1hStr.split(": ");
+        if (mPercentChange1hStr.contains("-")) {
+            mPercentChange1hStr = "<font color=#A9A9A9>" + context.getString(R.string.percent_change_1h) + " :</font> <font color=#ff3333>" + mPercentChange1hSplit[1] + "</font>";
+            mPercentChange1h.setText(Html.fromHtml(mPercentChange1hStr));
+        } else if (!mPercentChange1hStr.equals("0.0%")) {
+            mPercentChange1hStr = "<font color=#A9A9A9>" + context.getString(R.string.percent_change_1h) + " :</font> <font color=#00ff55>+" + mPercentChange1hSplit[1] + "</font>";
+            mPercentChange1h.setText(Html.fromHtml(mPercentChange1hStr));
         }
 
-        String mCrypto = cryptoAdapter.getName();
+        String mPercentChange24hStr = aboutCryptoAdapter.getPercentChange24h();
+        String[] mPercentChange24hSplit = mPercentChange24hStr.split(": ");
+        if (mPercentChange24hStr.contains("-")) {
+            mPercentChange24hStr = "<font color=#A9A9A9>" + context.getString(R.string.percent_change_24h) + " :</font> <font color=#ff3333>" + mPercentChange24hSplit[1] + "</font>";
+            mPercentChange24h.setText(Html.fromHtml(mPercentChange24hStr));
+        } else if (!mPercentChange24hStr.equals("0.0%")) {
+            mPercentChange24hStr = "<font color=#A9A9A9>" + context.getString(R.string.percent_change_24h) + " :</font> <font color=#00ff55>+" + mPercentChange24hSplit[1] + "</font>";
+            mPercentChange24h.setText(Html.fromHtml(mPercentChange24hStr));
+        }
+
+        String mPercentChange7dStr = aboutCryptoAdapter.getPercentChange7d();
+        String[] mPercentChange7dSplit = mPercentChange7dStr.split(": ");
+        if (mPercentChange7dStr.contains("-")) {
+            mPercentChange7dStr = "<font color=#A9A9A9>" + context.getString(R.string.percent_change_7d) + " :</font> <font color=#ff3333>" + mPercentChange7dSplit[1] + "</font>";
+            mPercentChange7d.setText(Html.fromHtml(mPercentChange7dStr));
+        } else if (!mPercentChange7dStr.equals("0.0%")) {
+            mPercentChange7dStr = "<font color=#A9A9A9>" + context.getString(R.string.percent_change_7d) + " :</font> <font color=#00ff55>+" + mPercentChange7dSplit[1] + "</font>";
+            mPercentChange7d.setText(Html.fromHtml(mPercentChange7dStr));
+        }
+
+        String mCrypto = aboutCryptoAdapter.getName();
         if (mCrypto.contains("(BTC)")) {
             setIcon(R.drawable.bitcoin_icon);
         } else if (mCrypto.contains("(ETH)")) {
@@ -222,10 +247,6 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    /**
-     * Change crypto's icon
-     * @param drawable icon
-     */
     private void setIcon(int drawable) {
         mIconImageView.setImageResource(drawable);
     }

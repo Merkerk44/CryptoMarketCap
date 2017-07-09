@@ -2,6 +2,26 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:title="Data Settings">
+
+        <EditTextPreference
+            android:defaultValue="100"
+            android:key="array_size"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/array_size"
+            android:summary="@string/array_size_summary"/>
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/currencies_list"
+            android:entryValues="@array/currencies_list"
+            android:key="currency_list_preference"
+            android:title="@string/currency_list_title"
+            android:summary="@string/currency_list_summary"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/refreshing_preference_title"
         android:key="pref_refreshing_settings">
 

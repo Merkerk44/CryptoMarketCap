@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="13dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/cryptoAboutRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/cryptoAboutName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"/>
+
+        <TextView android:id="@+id/cryptoAboutPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:text="@string/price"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/cryptoAboutMarketCap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/market_cap"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/cryptoAboutCirculatingSupply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/circulating_supply"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/cryptoAboutVolume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/volume"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/cryptoAboutPercentChange1h"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/percent_change_1h"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/cryptoAboutPercentChange24h"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/percent_change_24h"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+
+        <TextView android:id="@+id/cryptoAboutPercentChange7d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/percent_change_7d"
+            android:paddingTop="5dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end">
+
+        <ImageView android:id="@+id/cryptoAboutIcon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            app:srcCompat="@drawable/bitcoin_icon"
+            android:contentDescription="@string/app_name"/>
+    </LinearLayout>
+</LinearLayout>

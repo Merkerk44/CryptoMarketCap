@@ -31,6 +31,16 @@
     <string name="check_for_updates">Check for updates</string>
     <string name="currency_list_title">Default currency</string>
     <string name="currency_list_summary">Choose the currency you want to be displayed</string>
+    <string name="pinned_coins">Pinned coins</string>
+    <string name="array_size">Cryptocurrencies array\'s size to display</string>
+    <string name="array_size_summary">Define the number of cryptocurriencies that will be displayed</string>
+    <string name="price">Price</string>
+    <string name="volume">24H Volume</string>
+    <string name="market_cap">Market Cap</string>
+    <string name="circulating_supply">Circulating supply</string>
+    <string name="percent_change_1h">Percent change (1H)</string>
+    <string name="percent_change_24h">Percent change (24H)</string>
+    <string name="percent_change_7d">Percent change (7D)</string>
     
     <string-array name="currencies_list">
         <item>USD</item>

@@ -26,10 +26,30 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".PinnedCoinsActivity"
+            android:theme="@style/PinnedCoinsTheme"
+            android:screenOrientation="portrait"
+            android:label="@string/pinned_coins"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity
             android:name=".SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/PreferencesTheme"
             android:label="@string/action_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity
+            android:name=".MoreAboutCryptoDialog"
+            android:theme="@android:style/Theme.Dialog"
+            android:label="@string/pinned_coins"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

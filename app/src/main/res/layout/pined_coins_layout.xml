@@ -2,25 +2,18 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/pinned_coins_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/AppTheme"
-    tools:context=".MainActivity">
+    android:theme="@style/PinnedCoinsTheme"
+    tools:context=".PinnedCoinsActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ToolbarTheme"
-        android:id="@+id/toolbar">
-    </android.support.v7.widget.Toolbar>
-
-    <android.support.v4.widget.SwipeRefreshLayout android:id="@+id/swipeRefreshLayout"
+    <android.support.v4.widget.SwipeRefreshLayout android:id="@+id/pinnedSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView android:id="@+id/recyclerView"
+        <android.support.v7.widget.RecyclerView android:id="@+id/pinnedRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"/>

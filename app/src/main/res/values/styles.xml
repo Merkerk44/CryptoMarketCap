@@ -23,12 +23,16 @@
         <item name="android:textColorPrimary">@color/colorTitle</item>
         <item name="android:background">@color/colorPrimary</item>
     </style>
-    <style name="ProgressDialogTheme" parent="Base.Widget.AppCompat.ProgressBar">
+    <style name="ProgressDialogTheme" parent="Widget.AppCompat.ProgressBar">
         <item name="colorAccent">@android:color/white</item>
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
     <style name="ToolbarTheme">
         <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="PinnedCoinsTheme" parent="AppTheme">
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
     </style>
 </resources>
