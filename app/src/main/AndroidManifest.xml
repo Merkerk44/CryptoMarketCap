@@ -48,7 +48,7 @@
         <activity
             android:name=".MoreAboutCryptoDialog"
             android:theme="@android:style/Theme.Dialog"
-            android:label="@string/pinned_coins"
+            android:label="@string/show_more_data"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data

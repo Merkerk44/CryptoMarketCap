@@ -21,6 +21,8 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/colorSummary"
+            android:clickable="true"
+            android:focusable="true"
             android:text="@string/got_it"/>
     </LinearLayout>
 </LinearLayout>

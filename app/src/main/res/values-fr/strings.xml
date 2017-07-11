@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">1.0.0</string>
+    <string name="app_version">2.1.1-beta</string>
     <string name="action_search">Rechercher</string>
     <string name="action_about">À Propos</string>
     <string name="action_settings">Paramètres</string>
@@ -21,7 +21,7 @@
     <string name="join_community">Rejoingnez www.labaleine.gg : communauté francophone de crypto monnaies</string>
     <string name="donate_to_developer">Don au développeur (merci !)</string>
     <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
-    <string name="eth_address">ETH : 0xe4c26694bcb02b498e67e8059a174e3998d1cd2c</string>
+    <string name="eth_address">ETH : 0xDD353AF332EB94148949a3725871649B1a491147</string>
     <string name="etc_address">ETC : 0x070beae2fd4ba17e354600938d853f71efc97f88</string>
     <string name="zec_address">ZEC : t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
     <string name="sc_address">SC : b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7</string>
@@ -41,10 +41,18 @@
     <string name="percent_change_1h">Percent change (1H)</string>
     <string name="percent_change_24h">Percent change (24H)</string>
     <string name="percent_change_7d">Percent change (7J)</string>
+    <string name="pinned">épinglé !</string>
+    <string name="remove">SUPPRIMER</string>
+    <string name="unpin">supprimé</string>
+    <string name="show_more_data">Afficher plus de données</string>
+    <string name="data_settings_title">Paramètres des données</string>
+    <string name="no_panic_title">Mode pas de panique</string>
+    <string name="no_panic_switch_summary">Active le mode pas de panique (supprime les couleurs)</string>
 
     <string-array name="currencies_list">
         <item>USD</item>
         <item>EUR</item>
         <item>GBP</item>
+        <item>BTC</item>
     </string-array>
 </resources>

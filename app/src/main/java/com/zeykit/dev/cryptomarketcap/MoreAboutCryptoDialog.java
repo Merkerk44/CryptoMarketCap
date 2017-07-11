@@ -1,13 +1,14 @@
 package com.zeykit.dev.cryptomarketcap;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -29,24 +30,37 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoreAboutCryptoDialog extends Activity {
+import dmax.dialog.SpotsDialog;
 
-    private LinearLayout moreAboutCryptoActivity;
+public class MoreAboutCryptoDialog extends FragmentActivity {
+
+    static LinearLayout moreAboutCryptoActivity;
     RecyclerView recyclerView;
     private List<AboutCryptoAdapter> cryptoAdapterList;
     private AboutCryptoRvAdapter adapter;
 
     static String selectedCrypto = "";
     private String[] cryptoName = selectedCrypto.split("\n");
-    private String apiAddress = "https://api.coinmarketcap.com/v1/ticker/" + cryptoName[0];
+    private String apiAddress = "";
+
+    private SharedPreferences sharedPreferences;
 
     private interface TAG {
         String NAME = "name";
         String SYMBOL = "symbol";
         String RANK = "rank";
         String PRICE_USD = "price_usd";
-        String VOLUME = "24h_volume_usd";
-        String MARKET_CAP = "market_cap_usd";
+        String PRICE_EUR = "price_eur";
+        String PRICE_GBP = "price_gbp";
+        String PRICE_BTC = "price_btc";
+        String VOLUME_USD = "24h_volume_usd";
+        String MARKET_CAP_USD = "market_cap_usd";
+        String VOLUME_EUR = "24h_volume_eur";
+        String MARKET_CAP_EUR = "market_cap_eur";
+        String VOLUME_GBP = "24h_volume_gbp";
+        String MARKET_CAP_GBP = "market_cap_gbp";
+        String VOLUME_BTC = "24h_volume_btc";
+        String MARKET_CAP_BTC = "market_cap_btc";
         String CIRCULATING_SUPPLY = "available_supply";
         String PERCENT_CHANGE_1H = "percent_change_1h";
         String PERCENT_CHANGE_24H = "percent_change_24h";
@@ -61,6 +75,28 @@ public class MoreAboutCryptoDialog extends Activity {
         setContentView(R.layout.more_about_crypto_layout);
         setFinishOnTouchOutside(false);
 
+        if (cryptoName[0].contains(" "))
+            cryptoName[0] = cryptoName[0].replace(" ", "-");
+
+        if (cryptoName[0].contains("DubaiCoin"))
+            cryptoName[0] = "dubaicoin-dbix";
+        if (cryptoName[0].contains("Golem"))
+            cryptoName[0] = "golem-network-tokens";
+        if (cryptoName[0].contains("Stellar"))
+            cryptoName[0] = "stellar";
+        if (cryptoName[0].contains("Gnosis"))
+            cryptoName[0] = "gnosis-gno";
+        if (cryptoName[0].contains("Bytecoin"))
+            cryptoName[0] = "bytecoin-bcn";
+        if (cryptoName[0].contains("Peerplays"))
+            cryptoName[0] = "peerplays-ppy";
+        if (cryptoName[0].contains("iExec"))
+            cryptoName[0] = "rlc";
+        if (cryptoName[0].contains("LBRY"))
+            cryptoName[0] = "library-credit";
+        if (cryptoName[0].contains("I/O"))
+            cryptoName[0] = "iocoin";
+
         init();
         setupRecyclerView();
 
@@ -69,9 +105,16 @@ public class MoreAboutCryptoDialog extends Activity {
             @Override
             public void onClick(View v) {
                 finish();
-                Intent intent = new Intent(v.getContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+
+                if (MainActivity.currentView.contains("MainActivity")) {
+                    Intent intent = new Intent(v.getContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(v.getContext(), PinnedCoinsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -80,8 +123,13 @@ public class MoreAboutCryptoDialog extends Activity {
     public void onStart() {
         super.onStart();
 
-        if (haveNetworkConnection())
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        if (haveNetworkConnectionV2())
             new JSONParse().execute();
+        else
+            showConnectionDialog();
+
     }
 
     private void init() {
@@ -119,9 +167,9 @@ public class MoreAboutCryptoDialog extends Activity {
 
     private class JSONParse extends AsyncTask<String, String, String> {
 
-        boolean connectionEnabled = haveNetworkConnection();
+        boolean connectionEnabled = haveNetworkConnectionV2();
 
-        private ProgressDialog progressDialog;
+        private SpotsDialog progressDialog;
 
         private AboutCryptoAdapter cryptoAdapter = new AboutCryptoAdapter();
         private JSONObject jObj;
@@ -142,14 +190,15 @@ public class MoreAboutCryptoDialog extends Activity {
 
         private boolean errorFound = false;
 
+        private String defaultCurrency = getDefaultCurrency();
+        String apiAddress = "https://api.coinmarketcap.com/v1/ticker/" + cryptoName[0] + "/?convert=" + defaultCurrency;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
             if (connectionEnabled) {
-                progressDialog = new ProgressDialog(moreAboutCryptoActivity.getContext(), R.style.ProgressDialogTheme);
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
+                progressDialog = new SpotsDialog(moreAboutCryptoActivity.getContext(), R.style.CustomProgressDialog);
                 progressDialog.show();
 
                 cryptoAdapterList.clear();
@@ -209,10 +258,31 @@ public class MoreAboutCryptoDialog extends Activity {
                             rank = jObj.getString(TAG.RANK);
                             name = jObj.getString(TAG.NAME);
                             symbol = "(" + jObj.getString(TAG.SYMBOL) + ")";
-                            price = getString(R.string.price) + " : $" + jObj.getString(TAG.PRICE_USD);
-                            marketCap = getString(R.string.market_cap) + " : $" + jObj.getString(TAG.MARKET_CAP);
+
+                            switch (defaultCurrency) {
+                                case "USD":
+                                    price = getString(R.string.price) + " : $" + jObj.getString(TAG.PRICE_USD);
+                                    marketCap = getString(R.string.market_cap) + " : $" + jObj.getString(TAG.MARKET_CAP_USD);
+                                    volume = getString(R.string.volume) + " : $" + jObj.getString(TAG.VOLUME_USD);
+                                    break;
+                                case "EUR":
+                                    price = getString(R.string.price) + " : €" + jObj.getString(TAG.PRICE_EUR);
+                                    marketCap = getString(R.string.market_cap) + " : €" + jObj.getString(TAG.MARKET_CAP_EUR);
+                                    volume = getString(R.string.volume) + " : €" + jObj.getString(TAG.VOLUME_EUR);
+                                    break;
+                                case "GBP":
+                                    price = getString(R.string.price) + " : £" + jObj.getString(TAG.PRICE_GBP);
+                                    marketCap = getString(R.string.market_cap) + " : £" + jObj.getString(TAG.MARKET_CAP_GBP);
+                                    volume = getString(R.string.volume) + " : £" + jObj.getString(TAG.VOLUME_GBP);
+                                    break;
+                                case "BTC":
+                                    price = getString(R.string.price) + " : ฿" + jObj.getString(TAG.PRICE_BTC);
+                                    marketCap = getString(R.string.market_cap) + " : ฿" + jObj.getString(TAG.MARKET_CAP_BTC);
+                                    volume = getString(R.string.volume) + " : ฿" + jObj.getString(TAG.VOLUME_BTC);
+                                    break;
+                            }
+
                             circulatingSupply = getString(R.string.circulating_supply) + " : $" + jObj.getString(TAG.CIRCULATING_SUPPLY);
-                            volume = getString(R.string.volume) + " : $" + jObj.getString(TAG.VOLUME);
                             percentChange1h = getString(R.string.percent_change_1h) + " : " + jObj.getString(TAG.PERCENT_CHANGE_1H) + "%";
                             percentChange24h = getString(R.string.percent_change_24h) + " : " + jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
                             percentChange7d = getString(R.string.percent_change_7d) + " : " + jObj.getString(TAG.PERCENT_CHANGE_7D) + "%";
@@ -234,5 +304,23 @@ public class MoreAboutCryptoDialog extends Activity {
             if (progressDialog != null)
                 progressDialog.dismiss();
         }
+    }
+
+    private String getDefaultCurrency() {
+        return sharedPreferences.getString("currency_list_preference", "USD");
+    }
+
+    private boolean haveNetworkConnectionV2() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mLte = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        return mWifi.isConnected() || mLte.isConnected();
+    }
+
+    private void showConnectionDialog() {
+        RequestConnectionDialog requestConnectionDialog = new RequestConnectionDialog();
+        requestConnectionDialog.show(getSupportFragmentManager(), null);
     }
 }

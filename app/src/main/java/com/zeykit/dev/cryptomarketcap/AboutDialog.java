@@ -36,7 +36,7 @@ public class AboutDialog extends DialogFragment {
 
     private interface CRYPTO_ADDR {
         String BTC = "1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG";
-        String ETH = "0xe4c26694bcb02b498e67e8059a174e3998d1cd2c";
+        String ETH = "0xDD353AF332EB94148949a3725871649B1a491147";
         String ETC = "0x070beae2fd4ba17e354600938d853f71efc97f88";
         String ZEC = "t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA";
         String SC = "b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7";
@@ -135,9 +135,11 @@ public class AboutDialog extends DialogFragment {
         Intent openDeveloperProfile = new Intent(Intent.ACTION_VIEW, uri);
 
         try {
+            dismiss();
             startActivity(openDeveloperProfile);
         } catch (ActivityNotFoundException e) {
             try {
+                dismiss();
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("http://play.google.com/store/apps/dev?id=6806198870613114063")));
             } catch (ActivityNotFoundException f) {
@@ -151,6 +153,7 @@ public class AboutDialog extends DialogFragment {
         Intent openDonateBitcoin = new Intent(Intent.ACTION_VIEW, uri);
 
         try {
+            dismiss();
             startActivity(openDonateBitcoin);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(getActivity().getApplicationContext(), getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
@@ -158,10 +161,11 @@ public class AboutDialog extends DialogFragment {
     }
 
     private void openDonateEth() {
-        Uri uri = Uri.parse("https://www.etherchain.org/account/0xA7753FbE95d1d99e2E112039B95896CCC3A7613F#txsent");
+        Uri uri = Uri.parse("https://www.etherchain.org/account/0xDD353AF332EB94148949a3725871649B1a491147#txsent");
         Intent openDonateEth = new Intent(Intent.ACTION_VIEW, uri);
 
         try {
+            dismiss();
             startActivity(openDonateEth);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(getActivity().getApplicationContext(), getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
@@ -176,6 +180,7 @@ public class AboutDialog extends DialogFragment {
         Intent openLaBaleine = new Intent(Intent.ACTION_VIEW, uri);
 
         try {
+            dismiss();
             startActivity(openLaBaleine);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(getActivity().getApplicationContext(), getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
@@ -190,9 +195,11 @@ public class AboutDialog extends DialogFragment {
         Intent openAppPage = new Intent(Intent.ACTION_VIEW, uri);
 
         try {
+            dismiss();
             startActivity(openAppPage);
         } catch (ActivityNotFoundException e) {
             try {
+                dismiss();
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://play.google.com/store/apps/details?id=" + getActivity().getApplicationContext().getPackageName())));
             } catch (ActivityNotFoundException f) {

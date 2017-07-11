@@ -1,7 +1,6 @@
 package com.zeykit.dev.cryptomarketcap;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,9 +44,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
+
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private final String _TAG = "CryptoMarketCap";
+    static String currentView = "";
 
     private interface PERMISSIONS {
         int REQUEST_NETWORK_STATE = 0x1;
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private boolean canRefresh = false;
     private boolean isFirstLaunch = true;
 
-    private LinearLayout activityMain;
+    static LinearLayout activityMain;
     private Toolbar mToolbar;
     RecyclerView recyclerView;
     private List<CryptoAdapter> cryptoAdapterList;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         String PRICE_USD = "price_usd";
         String PRICE_EUR = "price_eur";
         String PRICE_GBP = "price_gbp";
+        String PRICE_BTC = "price_btc";
         String PERCENT_CHANGE_24H = "percent_change_24h";
     }
 
@@ -131,6 +134,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         isRunning = true;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        //TODO Removing for release
+        /*TinyDB tinyDB = new TinyDB(getApplicationContext());
+        ArrayList<String> arrayList = new ArrayList<>();
+        tinyDB.putListString("pinned_coins", arrayList);*/
+
         // Check for permissions
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -158,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Log.d(_TAG, "Requesting for Internet permission");
                 }
             } else {
-                if (haveNetworkConnection()) {
+                if (haveNetworkConnectionV2()) {
                     if (isFirstLaunch) {
                         new JSONParse().execute();
                         isFirstLaunch = false;
@@ -191,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Log.d(_TAG, "Internet permission denied");
                 }
             }
-
         }
     }
 
@@ -280,11 +287,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             int autoRefreshDelayToInt = Integer.parseInt(autoRefreshDelay);
             handler.postDelayed(autoRefresh, autoRefreshDelayToInt);
 
-            if (autoRefreshEnabled() && canRefresh) {
-                Log.d(_TAG, "Refreshing...");
-                new JSONParse().execute();
-            } else {
-                canRefresh = true;
+            if (isRunning) {
+                if (autoRefreshEnabled() && canRefresh) {
+                    Log.d(_TAG, "Refreshing...");
+                    new JSONParse().execute();
+                } else {
+                    canRefresh = true;
+                }
             }
         }
     };
@@ -321,12 +330,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private class JSONParse extends AsyncTask<String, String, String> {
 
-        boolean connectionEnabled = haveNetworkConnection();
+        boolean connectionEnabled = haveNetworkConnectionV2();
 
         private String defaultCurrency = getDefaultCurrency();
         private final String urlAddress = "https://api.coinmarketcap.com/v1/ticker/?convert=" + defaultCurrency + "&limit=" + arraySizeToDisplay();
 
-        private ProgressDialog progressDialog;
+        //private ProgressDialog progressDialog;
+        private SpotsDialog progressDialog;
 
         private CryptoAdapter cryptoAdapter = new CryptoAdapter();
         private JSONObject jObj;
@@ -345,11 +355,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         protected void onPreExecute() {
             super.onPreExecute();
 
+            if (swipeRefreshLayout != null)
+                swipeRefreshLayout.setRefreshing(false);
+
             if (connectionEnabled) {
-                progressDialog = new ProgressDialog(activityMain.getContext(), R.style.ProgressDialogTheme);
+                /*progressDialog = new ProgressDialog(activityMain.getContext(), R.style.ProgressDialogTheme);
                 progressDialog.setCancelable(false);
                 progressDialog.setIndeterminate(true);
-                progressDialog.setMessage(getString(R.string.receiving_data));
+                progressDialog.setMessage(getString(R.string.receiving_data));*/
+                progressDialog = new SpotsDialog(activityMain.getContext(), R.style.CustomProgressDialog);
 
                 if (isRunning)
                     progressDialog.show();
@@ -432,6 +446,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             case "GBP":
                                 price = "£" + jObj.getString(TAG.PRICE_GBP);
                                 break;
+                            case "BTC":
+                                price = "฿" + jObj.getString(TAG.PRICE_BTC);
+                                break;
                         }
 
                         percentChange = jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
@@ -479,6 +496,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         }
         return wifiConnected || dataConnected;
+    }
+
+    private boolean haveNetworkConnectionV2() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mLte = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        Log.d(_TAG, "Wifi: " + mWifi.isConnected() + "\nLTE: " + mLte.isConnected());
+
+        return mWifi.isConnected() || mLte.isConnected();
     }
 
     /**

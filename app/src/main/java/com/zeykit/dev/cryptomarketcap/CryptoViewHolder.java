@@ -1,11 +1,18 @@
 package com.zeykit.dev.cryptomarketcap;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class CryptoViewHolder extends RecyclerView.ViewHolder {
 
@@ -15,8 +22,12 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
     private TextView mPriceTextView;
     private TextView mPercentChangeTextView;
 
+    Context context;
+
     public CryptoViewHolder(View v) {
         super(v);
+
+        context = v.getContext();
 
         mRankTextView = (TextView) v.findViewById(R.id.rankTextView);
         mIconImageView = (ImageView) v.findViewById(R.id.iconImageView);
@@ -29,9 +40,23 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
             public boolean onLongClick(View v) {
                 MoreAboutCryptoDialog.selectedCrypto = mNameTextView.getText().toString();
 
-                Intent intent = new Intent(v.getContext(),
-                        MoreAboutCryptoDialog.class);
-                v.getContext().startActivity(intent);
+                ActivityManager am = (ActivityManager) v.getContext().getSystemService(Context.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+                String currentActivity = taskInfo.get(0).topActivity.getClassName();
+                Log.d("CryptoMarketCap", currentActivity);
+
+                if (currentActivity.contains("MainActivity")) {
+                    MainActivity.currentView = "MainActivity";
+                } else {
+                    MainActivity.currentView = "PinnedCoinsActivity";
+                }
+
+                if (!MoreAboutCryptoDialog.selectedCrypto.contains("No pinned coins")) {
+                    Intent intent = new Intent(v.getContext(),
+                            MoreAboutCryptoDialog.class);
+                    v.getContext().startActivity(intent);
+                }
+
                 return true;
             }
         });
@@ -45,15 +70,17 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
         mPriceTextView.setText(cryptoAdapter.getPrice());
         mPercentChangeTextView.setText(cryptoAdapter.getPercentChange());
 
-        String mPercentChange = cryptoAdapter.getPercentChange();
-        if (mPercentChange.contains("-")) {
-            mPercentChangeTextView.setTextColor(Color.parseColor("#ff3333"));
-        } else if (mPercentChange.equals("0.0%")) {
-            mPercentChangeTextView.setTextColor(Color.parseColor("#ffffff"));
-        } else {
-            String percentChange = "+" + cryptoAdapter.getPercentChange();
-            mPercentChangeTextView.setText(percentChange);
-            mPercentChangeTextView.setTextColor(Color.parseColor("#00ff55"));
+        if (!isNoPanicModeEnable()) {
+            String mPercentChange = cryptoAdapter.getPercentChange();
+            if (mPercentChange.contains("-")) {
+                mPercentChangeTextView.setTextColor(Color.parseColor("#ff3333"));
+            } else if (mPercentChange.equals("0.0%")) {
+                mPercentChangeTextView.setTextColor(Color.parseColor("#ffffff"));
+            } else if (!mPercentChange.isEmpty()) {
+                String percentChange = "+" + cryptoAdapter.getPercentChange();
+                mPercentChangeTextView.setText(percentChange);
+                mPercentChangeTextView.setTextColor(Color.parseColor("#00ff55"));
+            }
         }
 
         String mCrypto = cryptoAdapter.getName();
@@ -217,6 +244,66 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
             setIcon(R.drawable.zcoin_icon);
         } else if (mCrypto.contains("(VTC)")) {
             setIcon(R.drawable.vertcoin_icon);
+        } else if (mCrypto.contains("(EOS)")) {
+            setIcon(R.drawable.eos_icon);
+        } else if (mCrypto.contains("(SNT)")) {
+            setIcon(R.drawable.status_icon);
+        } else if (mCrypto.contains("(BNT)")) {
+            setIcon(R.drawable.bancor_icon);
+        } else if (mCrypto.contains("(PAY)")) {
+            setIcon(R.drawable.tenx_icon);
+        } else if (mCrypto.contains("(DCT)")) {
+            setIcon(R.drawable.decent_icon);
+        } else if (mCrypto.contains("(MTL)")) {
+            setIcon(R.drawable.metal_icon);
+        } else if (mCrypto.contains("(FUN)")) {
+            setIcon(R.drawable.funfair_icon);
+        } else if (mCrypto.contains("(SOAR)")) {
+            setIcon(R.drawable.soarcoin_icon);
+        } else if (mCrypto.contains("(DICE)")) {
+            setIcon(R.drawable.etheroll_icon);
+        } else if (mCrypto.contains("(DBIX)")) {
+            setIcon(R.drawable.dubaicoin_icon);
+        } else if (mCrypto.contains("(EDR)")) {
+            setIcon(R.drawable.edinar_icon);
+        } else if (mCrypto.contains("(YBC)")) {
+            setIcon(R.drawable.ybcoin_icon);
+        } else if (mCrypto.contains("(SKY)")) {
+            setIcon(R.drawable.skycoin_icon);
+        } else if (mCrypto.contains("(QAU)")) {
+            setIcon(R.drawable.quantum_icon);
+        } else if (mCrypto.contains("(HMQ)")) {
+            setIcon(R.drawable.humaniq_icon);
+        } else if (mCrypto.contains("(STORJ)")) {
+            setIcon(R.drawable.storj_icon);
+        } else if (mCrypto.contains("(ADT)")) {
+            setIcon(R.drawable.adtoken_icon);
+        } else if (mCrypto.contains("(POT)")) {
+            setIcon(R.drawable.potcoin_icon);
+        } else if (mCrypto.contains("(BLOCK)")) {
+            setIcon(R.drawable.blocknet_icon);
+        } else if (mCrypto.contains("(VSL)")) {
+            setIcon(R.drawable.vslice_icon);
+        } else if (mCrypto.contains("(OBITS)")) {
+            setIcon(R.drawable.obits_icon);
+        } else if (mCrypto.contains("(SIB)")) {
+            setIcon(R.drawable.sibcoin_icon);
+        } else if (mCrypto.contains("(SLS)")) {
+            setIcon(R.drawable.salus_icon);
+        } else if (mCrypto.contains("(SWT)")) {
+            setIcon(R.drawable.swarmcity_icon);
+        } else if (mCrypto.contains("(UNY)")) {
+            setIcon(R.drawable.unityingot_icon);
+        } else if (mCrypto.contains("(IOC)")) {
+            setIcon(R.drawable.iocoin_icon);
+        } else if (mCrypto.contains("(BURST)")) {
+            setIcon(R.drawable.burst_icon);
+        } else if (mCrypto.contains("(NVC)")) {
+            setIcon(R.drawable.novacoin_icon);
+        } else if (mCrypto.contains("(TKN)")) {
+            setIcon(R.drawable.tokencard_icon);
+        } else if (mCrypto.contains("(VIA)")) {
+            setIcon(R.drawable.viacoin_icon);
         } else {
             mIconImageView.setImageDrawable(null);
         }
@@ -228,5 +315,10 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
      */
     private void setIcon(int drawable) {
         mIconImageView.setImageResource(drawable);
+    }
+
+    private boolean isNoPanicModeEnable() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("no_panic_switch", false);
     }
 }

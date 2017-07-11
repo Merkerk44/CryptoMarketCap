@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="Data Settings">
+        android:title="@string/data_settings_title">
 
         <EditTextPreference
             android:defaultValue="100"
@@ -13,12 +13,18 @@
             android:summary="@string/array_size_summary"/>
 
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="USD"
             android:entries="@array/currencies_list"
             android:entryValues="@array/currencies_list"
             android:key="currency_list_preference"
             android:title="@string/currency_list_title"
             android:summary="@string/currency_list_summary"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="no_panic_switch"
+            android:title="@string/no_panic_title"
+            android:summary="@string/no_panic_switch_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory

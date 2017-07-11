@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">1.0.0</string>
+    <string name="app_version">2.1.1-beta</string>
     <string name="action_search">Search</string>
     <string name="action_about">About</string>
     <string name="action_settings">Settings</string>
@@ -21,7 +21,7 @@
     <string name="join_community">Join www.labaleine.gg : french cryptocurrencies community</string>
     <string name="donate_to_developer">Donate to developer (thanks you !)</string>
     <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
-    <string name="eth_address">ETH : 0xe4c26694bcb02b498e67e8059a174e3998d1cd2c</string>
+    <string name="eth_address">ETH : 0xDD353AF332EB94148949a3725871649B1a491147</string>
     <string name="etc_address">ETC : 0x070beae2fd4ba17e354600938d853f71efc97f88</string>
     <string name="zec_address">ZEC : t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
     <string name="sc_address">SC : b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7</string>
@@ -41,10 +41,18 @@
     <string name="percent_change_1h">Percent change (1H)</string>
     <string name="percent_change_24h">Percent change (24H)</string>
     <string name="percent_change_7d">Percent change (7D)</string>
+    <string name="pinned">pinned !</string>
+    <string name="remove">REMOVE</string>
+    <string name="unpin">removed</string>
+    <string name="show_more_data">Show more data</string>
+    <string name="data_settings_title">Data Settings</string>
+    <string name="no_panic_title">No panic mode</string>
+    <string name="no_panic_switch_summary">Enable the no panic mode (remove colors)</string>
     
     <string-array name="currencies_list">
         <item>USD</item>
         <item>EUR</item>
         <item>GBP</item>
+        <item>BTC</item>
     </string-array>
 </resources>
