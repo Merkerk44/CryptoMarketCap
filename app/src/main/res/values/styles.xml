@@ -39,8 +39,12 @@
     <style name="CustomProgressDialog" parent="Base.Theme.AppCompat.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
         <item name="DialogTitleText">@string/receiving_data</item>
-        <item name="DialogSpotColor">@android:color/holo_orange_dark</item>
+        <item name="DialogSpotColor">#33CCFF</item>
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="DialogSpotCount">8</item>
+    </style>
+    <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
     </style>
 </resources>

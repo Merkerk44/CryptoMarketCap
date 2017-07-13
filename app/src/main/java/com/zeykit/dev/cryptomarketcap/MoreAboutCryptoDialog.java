@@ -1,5 +1,6 @@
 package com.zeykit.dev.cryptomarketcap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -32,7 +34,7 @@ import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
-public class MoreAboutCryptoDialog extends FragmentActivity {
+public class MoreAboutCryptoDialog extends Activity {
 
     static LinearLayout moreAboutCryptoActivity;
     RecyclerView recyclerView;
@@ -105,18 +107,25 @@ public class MoreAboutCryptoDialog extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                MainActivity.justClosedDialog = true;
 
-                if (MainActivity.currentView.contains("MainActivity")) {
-                    Intent intent = new Intent(v.getContext(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                } else {
+                if (!MainActivity.currentView.contains("MainActivity") && !getStoredPinnedCoins().equals(PinnedCoinsActivity.pinnedCoins)) {
+                    PinnedCoinsActivity.initialized = false;
                     Intent intent = new Intent(v.getContext(), PinnedCoinsActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
+                /*if (!MainActivity.currentView.contains("MainActivity")) {
+                    Intent intent = new Intent(v.getContext(), PinnedCoinsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }*/
             }
         });
+    }
+
+    private String getStoredPinnedCoins() {
+        return sharedPreferences.getString("pinned_coins", "");
     }
 
     @Override
@@ -125,11 +134,16 @@ public class MoreAboutCryptoDialog extends FragmentActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if (haveNetworkConnectionV2())
+        if (haveNetworkConnectionV2(getApplicationContext()))
             new JSONParse().execute();
         else
-            showConnectionDialog();
+            finish();
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     private void init() {
@@ -167,7 +181,7 @@ public class MoreAboutCryptoDialog extends FragmentActivity {
 
     private class JSONParse extends AsyncTask<String, String, String> {
 
-        boolean connectionEnabled = haveNetworkConnectionV2();
+        boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
 
         private SpotsDialog progressDialog;
 
@@ -310,17 +324,26 @@ public class MoreAboutCryptoDialog extends FragmentActivity {
         return sharedPreferences.getString("currency_list_preference", "USD");
     }
 
-    private boolean haveNetworkConnectionV2() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+    private boolean haveNetworkConnectionV2(Context context) {
+        ConnectivityManager conMgr = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mLte = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        final android.net.NetworkInfo wifi = conMgr
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        return mWifi.isConnected() || mLte.isConnected();
-    }
+        final android.net.NetworkInfo mobile = conMgr
+                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-    private void showConnectionDialog() {
-        RequestConnectionDialog requestConnectionDialog = new RequestConnectionDialog();
-        requestConnectionDialog.show(getSupportFragmentManager(), null);
+        if ((wifi.isAvailable() && wifi.isConnected())
+                || (mobile.isAvailable() && mobile.isConnected())) {
+            Log.i("Is Net work?", "isNetWork:in 'isNetWork_if' is N/W Connected:"
+                    + NetworkInfo.State.CONNECTED);
+            return true;
+        } else if (conMgr.getActiveNetworkInfo() != null
+                && conMgr.getActiveNetworkInfo().isAvailable()
+                && conMgr.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        return false;
     }
 }

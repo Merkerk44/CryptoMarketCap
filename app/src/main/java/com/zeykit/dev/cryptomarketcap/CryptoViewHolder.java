@@ -70,8 +70,8 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
         mPriceTextView.setText(cryptoAdapter.getPrice());
         mPercentChangeTextView.setText(cryptoAdapter.getPercentChange());
 
+        String mPercentChange = cryptoAdapter.getPercentChange();
         if (!isNoPanicModeEnable()) {
-            String mPercentChange = cryptoAdapter.getPercentChange();
             if (mPercentChange.contains("-")) {
                 mPercentChangeTextView.setTextColor(Color.parseColor("#ff3333"));
             } else if (mPercentChange.equals("0.0%")) {
@@ -81,6 +81,12 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
                 mPercentChangeTextView.setText(percentChange);
                 mPercentChangeTextView.setTextColor(Color.parseColor("#00ff55"));
             }
+        } else {
+            if (!mPercentChange.contains("-") && !mPercentChange.equals("0.0%")) {
+                String percentChange = "+" + cryptoAdapter.getPercentChange();
+                mPercentChangeTextView.setText(percentChange);
+            }
+            mPercentChangeTextView.setTextColor(Color.parseColor("#ffffff"));
         }
 
         String mCrypto = cryptoAdapter.getName();

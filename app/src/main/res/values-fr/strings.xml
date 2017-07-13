@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">2.1.1-beta</string>
+    <string name="app_version">2.2.0</string>
     <string name="action_search">Rechercher</string>
     <string name="action_about">À Propos</string>
     <string name="action_settings">Paramètres</string>
@@ -18,7 +18,7 @@
     <string name="got_it">COMPRIS</string>
     <string name="developed_by_zeykit_dev">Développé par Zeykit-Dev</string>
     <string name="market_data_from">Les données du marché proviennent de CoinMarketCap.com</string>
-    <string name="join_community">Rejoingnez www.labaleine.gg : communauté francophone de crypto monnaies</string>
+    <string name="join_community">Rejoignez www.labaleine.gg : communauté francophone de crypto monnaies</string>
     <string name="donate_to_developer">Don au développeur (merci !)</string>
     <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
     <string name="eth_address">ETH : 0xDD353AF332EB94148949a3725871649B1a491147</string>
@@ -48,6 +48,11 @@
     <string name="data_settings_title">Paramètres des données</string>
     <string name="no_panic_title">Mode pas de panique</string>
     <string name="no_panic_switch_summary">Active le mode pas de panique (supprime les couleurs)</string>
+    <string name="rta_title">Noter l\'application</string>
+    <string name="rta_message">Si vous aimez utiliser cette application, voulez-vous bien prendre un moment pour la noter ? Ça ne prendra pas plus d\'une minute. Merci de votre soutient !</string>
+    <string name="rta_yes">NOTER</string>
+    <string name="rta_no">NON, MERCI</string>
+    <string name="rta_cancel">PLUS TARD</string>
 
     <string-array name="currencies_list">
         <item>USD</item>

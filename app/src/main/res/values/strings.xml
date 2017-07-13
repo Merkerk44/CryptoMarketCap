@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">2.1.1-beta</string>
+    <string name="app_version">2.2.0</string>
     <string name="action_search">Search</string>
     <string name="action_about">About</string>
     <string name="action_settings">Settings</string>
@@ -48,6 +48,11 @@
     <string name="data_settings_title">Data Settings</string>
     <string name="no_panic_title">No panic mode</string>
     <string name="no_panic_switch_summary">Enable the no panic mode (remove colors)</string>
+    <string name="rta_title">Rate this app</string>
+    <string name="rta_message">If you enjoy using this app, would you mind taking a moment to rate it ? It won\'t take more than a minute. Thank you for your support !</string>
+    <string name="rta_yes">RATE NOW</string>
+    <string name="rta_no">NO, THANKS</string>
+    <string name="rta_cancel">LATER</string>
     
     <string-array name="currencies_list">
         <item>USD</item>

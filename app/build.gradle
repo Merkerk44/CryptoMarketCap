@@ -7,8 +7,8 @@ android {
         applicationId "com.zeykit.dev.cryptomarketcap"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 10
-        versionName "2.1.1-beta"
+        versionCode 20
+        versionName "2.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -29,4 +29,6 @@ dependencies {
     compile 'com.android.support:design:25.4.0'
     compile 'com.android.support:recyclerview-v7:25.4.0'
     compile 'com.github.d-max:spots-dialog:0.4@aar'
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'io.github.kobakei:ratethisapp:1.2.0'
 }

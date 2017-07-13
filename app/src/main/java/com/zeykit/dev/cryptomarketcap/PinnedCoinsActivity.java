@@ -15,6 +15,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,6 +35,8 @@ import java.util.List;
 import dmax.dialog.SpotsDialog;
 
 public class PinnedCoinsActivity extends AppCompatActivity {
+
+    private final String _TAG = "CryptoMarketCap";
 
     private ActionBar actionBar;
     static LinearLayout pinnedCoinsLayout;
@@ -43,6 +49,10 @@ public class PinnedCoinsActivity extends AppCompatActivity {
     private TinyDB tinyDB;
 
     private SharedPreferences sharedPreferences = null;
+
+    static boolean initialized = false;
+
+    static String pinnedCoins = "";
 
     private interface TAG {
         String RANK = "rank";
@@ -86,13 +96,26 @@ public class PinnedCoinsActivity extends AppCompatActivity {
         super.onStart();
 
         tinyDB = new TinyDB(getApplicationContext());
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if (haveNetworkConnectionV2() && !tinyDB.getString("pinned_coins").isEmpty())
-            new JSONParse().execute();
-        else
-            showConnectionDialog();
+        if (!tinyDB.getString("pinned_coins").isEmpty()) {
+            if (haveNetworkConnectionV2(getApplicationContext())) {
+                if (!initialized) {
+                    new JSONParse().execute();
+                    initialized = true;
+                }
+            } else {
+                showConnectionDialog();
+            }
+        }
+
+        Log.d("CryptoMarketCap", sharedPreferences.getString("pinned_coins", ""));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        initialized = false;
     }
 
     private void init() {
@@ -162,7 +185,7 @@ public class PinnedCoinsActivity extends AppCompatActivity {
             if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);
 
-            if (haveNetworkConnectionV2()) {
+            if (haveNetworkConnectionV2(getApplicationContext())) {
                 progressDialog = new SpotsDialog(pinnedCoinsLayout.getContext(), R.style.CustomProgressDialog);
                 progressDialog.show();
 
@@ -221,7 +244,7 @@ public class PinnedCoinsActivity extends AppCompatActivity {
             HttpURLConnection connection;
             BufferedReader reader;
 
-            if (haveNetworkConnectionV2()) {
+            if (haveNetworkConnectionV2(getApplicationContext())) {
                 try {
                     if (!pinnedCoins.isEmpty()) {
                         for (int i = 0; i < pinnedCoins.size(); i++) {
@@ -229,7 +252,7 @@ public class PinnedCoinsActivity extends AppCompatActivity {
                             if (pinnedCoins.get(i).contains(" ")) {
                                 pinnedCoin = pinnedCoins.get(i).replace(" ", "-");
                             } else if (pinnedCoins.get(i).contains("DubaiCoin")) {
-                                pinnedCoin = "debaicoin-dbix";
+                                pinnedCoin = "dubaicoin-dbix";
                             } else if (pinnedCoins.get(i).contains("Golem")) {
                                 pinnedCoin = "golem-network-tokens";
                             } else if (pinnedCoins.get(i).contains("Stellar")) {
@@ -289,20 +312,40 @@ public class PinnedCoinsActivity extends AppCompatActivity {
 
             if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);
+
+            storePinnedCoinsPref();
         }
+    }
+
+    private void storePinnedCoinsPref() {
+        pinnedCoins = sharedPreferences.getString("pinned_coins", "");
     }
 
     private String getDefaultCurrency() {
         return sharedPreferences.getString("currency_list_preference", "USD");
     }
 
-    private boolean haveNetworkConnectionV2() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+    private boolean haveNetworkConnectionV2(Context context) {
+        ConnectivityManager conMgr = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mLte = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        final android.net.NetworkInfo wifi = conMgr
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        return mWifi.isConnected() || mLte.isConnected();
+        final android.net.NetworkInfo mobile = conMgr
+                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if ((wifi.isAvailable() && wifi.isConnected())
+                || (mobile.isAvailable() && mobile.isConnected())) {
+            Log.i("Is Net work?", "isNetWork:in 'isNetWork_if' is N/W Connected:"
+                    + NetworkInfo.State.CONNECTED);
+            return true;
+        } else if (conMgr.getActiveNetworkInfo() != null
+                && conMgr.getActiveNetworkInfo().isAvailable()
+                && conMgr.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        return false;
     }
 
     private void showConnectionDialog() {

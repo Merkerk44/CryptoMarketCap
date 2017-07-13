@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -29,7 +30,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.kobakei.ratethisapp.RateThisApp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +45,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,6 +54,14 @@ import java.util.List;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+
+    ///TODO Open crypto's website
+    ///TODO Widget
+    ///TODO Splash Screen -> boot
+    ///TODO Change default currency textColor
+    ///TODO Pinned coins in right order
+    ///TODO Refresh when closing settings panel
+    ///TODO Clarify data
 
     private final String _TAG = "CryptoMarketCap";
     static String currentView = "";
@@ -59,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private boolean isRunning = false;
     private boolean canRefresh = false;
     private boolean isFirstLaunch = true;
+    static boolean justClosedDialog = false;
 
     static LinearLayout activityMain;
     private Toolbar mToolbar;
@@ -131,8 +147,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onStart() {
         super.onStart();
 
+        Log.d(_TAG, "On start\n" + isFirstLaunch);
         isRunning = true;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
 
         //TODO Removing for release
         /*TinyDB tinyDB = new TinyDB(getApplicationContext());
@@ -166,8 +185,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Log.d(_TAG, "Requesting for Internet permission");
                 }
             } else {
-                if (haveNetworkConnectionV2()) {
-                    if (isFirstLaunch) {
+                if (connectionEnabled) {
+                    if (isFirstLaunch && !justClosedDialog) {
                         new JSONParse().execute();
                         isFirstLaunch = false;
                     }
@@ -215,11 +234,38 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         } else {
             handler.removeCallbacks(autoRefresh);
         }
+
+        if (justClosedDialog) {
+            Gson gson = new Gson();
+            Type listOfObjects = new TypeToken<List<CryptoAdapter>>() {
+            }.getType();
+            String json = sharedPreferences.getString("stored_rv_data", "");
+            List<CryptoAdapter> retrieveStoredData = gson.fromJson(json, listOfObjects);
+
+            cryptoAdapterList.clear();
+            adapter.notifyDataSetChanged();
+            cryptoAdapterList.addAll(retrieveStoredData);
+            adapter.notifyDataSetChanged();
+
+            isRunning = true;
+            Log.d(_TAG, "ArrayList set");
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
+        Type listOfObjects = new TypeToken<List<CryptoAdapter>>(){}.getType();
+        Gson gson = new Gson();
+        String strObj = gson.toJson(cryptoAdapterList, listOfObjects);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("stored_rv_data");
+        editor.apply();
+        editor.putString("stored_rv_data", strObj);
+        editor.apply();
+
+        Log.d(_TAG, sharedPreferences.getString("stored_rv_data", strObj));
 
         isRunning = false;
     }
@@ -287,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             int autoRefreshDelayToInt = Integer.parseInt(autoRefreshDelay);
             handler.postDelayed(autoRefresh, autoRefreshDelayToInt);
 
-            if (isRunning) {
+            if (isRunning && !justClosedDialog) {
                 if (autoRefreshEnabled() && canRefresh) {
                     Log.d(_TAG, "Refreshing...");
                     new JSONParse().execute();
@@ -330,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private class JSONParse extends AsyncTask<String, String, String> {
 
-        boolean connectionEnabled = haveNetworkConnectionV2();
+        boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
 
         private String defaultCurrency = getDefaultCurrency();
         private final String urlAddress = "https://api.coinmarketcap.com/v1/ticker/?convert=" + defaultCurrency + "&limit=" + arraySizeToDisplay();
@@ -370,8 +416,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                 cryptoAdapterList.clear();
                 adapter.notifyDataSetChanged();
-            } else {
-                showConnectionDialog();
             }
         }
 
@@ -470,6 +514,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);
+
+            RateThisApp.onCreate(activityMain.getContext());
+            RateThisApp.Config config = new RateThisApp.Config(7, 10);
+            config.setTitle(R.string.rta_title);
+            config.setMessage(R.string.rta_message);
+            config.setYesButtonText(R.string.rta_yes);
+            config.setNoButtonText(R.string.rta_no);
+            config.setCancelButtonText(R.string.rta_cancel);
+            RateThisApp.init(config);
+            RateThisApp.showRateDialogIfNeeded(activityMain.getContext(), R.style.AlertDialog);
         }
     }
 
@@ -498,15 +552,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return wifiConnected || dataConnected;
     }
 
-    private boolean haveNetworkConnectionV2() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+    private boolean haveNetworkConnectionV2(Context context) {
+        ConnectivityManager conMgr = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mLte = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        final android.net.NetworkInfo wifi = conMgr
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        Log.d(_TAG, "Wifi: " + mWifi.isConnected() + "\nLTE: " + mLte.isConnected());
+        final android.net.NetworkInfo mobile = conMgr
+                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-        return mWifi.isConnected() || mLte.isConnected();
+        if ((wifi.isAvailable() && wifi.isConnected())
+                || (mobile.isAvailable() && mobile.isConnected())) {
+            Log.i("Is Net work?", "isNetWork:in 'isNetWork_if' is N/W Connected:"
+                    + NetworkInfo.State.CONNECTED);
+            return true;
+        } else if (conMgr.getActiveNetworkInfo() != null
+                && conMgr.getActiveNetworkInfo().isAvailable()
+                && conMgr.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        return false;
     }
 
     /**
