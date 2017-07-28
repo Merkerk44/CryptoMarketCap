@@ -60,7 +60,24 @@
         android:textSize="12sp"
         android:text="@string/eth_address"
         android:textColor="@android:color/white"
+        android:paddingBottom="10dp"/>
+
+    <TextView android:id="@+id/zecTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="@string/zec_address"
+        android:textColor="@color/colorTitle"
         android:paddingBottom="30dp"/>
+
+    <TextView android:id="@+id/reportABugTextView"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@color/colorTitle"
+        android:paddingBottom="10dp" />
 
     <TextView android:id="@+id/checkForUpdateTextView"
         android:gravity="center"
@@ -68,7 +85,7 @@
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:textColor="@color/gray"
-        android:paddingBottom="10dp"/>
+        android:paddingBottom="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,7 +42,6 @@ public class MoreAboutCryptoDialog extends Activity {
 
     static String selectedCrypto = "";
     private String[] cryptoName = selectedCrypto.split("\n");
-    private String apiAddress = "";
 
     private SharedPreferences sharedPreferences;
 
@@ -109,17 +107,12 @@ public class MoreAboutCryptoDialog extends Activity {
                 finish();
                 MainActivity.justClosedDialog = true;
 
-                if (!MainActivity.currentView.contains("MainActivity") && !getStoredPinnedCoins().equals(PinnedCoinsActivity.pinnedCoins)) {
+                if (!MainActivity.currentView.contains("MainActivity") && !getStoredPinnedCoins().equals(PinnedCoinsActivity.pinnedCoinsStr)) {
                     PinnedCoinsActivity.initialized = false;
                     Intent intent = new Intent(v.getContext(), PinnedCoinsActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
-                /*if (!MainActivity.currentView.contains("MainActivity")) {
-                    Intent intent = new Intent(v.getContext(), PinnedCoinsActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                }*/
             }
         });
     }
@@ -159,24 +152,6 @@ public class MoreAboutCryptoDialog extends Activity {
 
         adapter = new AboutCryptoRvAdapter(cryptoAdapterList);
         recyclerView.setAdapter(adapter);
-    }
-
-    private boolean haveNetworkConnection() {
-        boolean wifiConnected = false;
-        boolean dataConnected = false;
-
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-        for (NetworkInfo ni : networkInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-                if (ni.isConnected())
-                    wifiConnected = true;
-            } else if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected())
-                    dataConnected = true;
-            }
-        }
-        return wifiConnected || dataConnected;
     }
 
     private class JSONParse extends AsyncTask<String, String, String> {
@@ -301,7 +276,7 @@ public class MoreAboutCryptoDialog extends Activity {
                             percentChange24h = getString(R.string.percent_change_24h) + " : " + jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
                             percentChange7d = getString(R.string.percent_change_7d) + " : " + jObj.getString(TAG.PERCENT_CHANGE_7D) + "%";
 
-                            cryptoAdapter = new AboutCryptoAdapter(rank, getDrawable(R.drawable.bitcoin_icon), name + " " + symbol, price, marketCap, circulatingSupply,
+                            cryptoAdapter = new AboutCryptoAdapter(rank, null, name + " " + symbol, price, marketCap, circulatingSupply,
                                     volume, percentChange1h, percentChange24h, percentChange7d);
 
                             cryptoAdapterList.add(i, cryptoAdapter);

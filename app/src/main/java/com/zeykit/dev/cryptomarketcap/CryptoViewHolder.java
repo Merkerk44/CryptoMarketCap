@@ -1,18 +1,15 @@
 package com.zeykit.dev.cryptomarketcap;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.InputFilter;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.List;
 
 public class CryptoViewHolder extends RecyclerView.ViewHolder {
 
@@ -35,17 +32,13 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
         mPriceTextView = (TextView) v.findViewById(R.id.priceTextView);
         mPercentChangeTextView = (TextView) v.findViewById(R.id.percentChangeTextView);
 
-        v.setOnLongClickListener(new View.OnLongClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public void onClick(View v) {
                 MoreAboutCryptoDialog.selectedCrypto = mNameTextView.getText().toString();
 
-                ActivityManager am = (ActivityManager) v.getContext().getSystemService(Context.ACTIVITY_SERVICE);
-                List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-                String currentActivity = taskInfo.get(0).topActivity.getClassName();
-                Log.d("CryptoMarketCap", currentActivity);
-
-                if (currentActivity.contains("MainActivity")) {
+                String runningActivity = MainActivity.mRunningActivity;
+                if (runningActivity.contains("MainActivity")) {
                     MainActivity.currentView = "MainActivity";
                 } else {
                     MainActivity.currentView = "PinnedCoinsActivity";
@@ -56,13 +49,26 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
                             MoreAboutCryptoDialog.class);
                     v.getContext().startActivity(intent);
                 }
-
-                return true;
             }
         });
     }
 
+    private String getDefaultCurrency() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("currency_list_preference", "USD");
+    }
+
     public void bind(CryptoAdapter cryptoAdapter) {
+
+        int maxLength;
+        if (!getDefaultCurrency().equals("BTC")) {
+            maxLength = 9;
+        } else {
+            maxLength = 11;
+        }
+        InputFilter[] fArray = new InputFilter[1];
+        fArray[0] = new InputFilter.LengthFilter(maxLength);
+        mPriceTextView.setFilters(fArray);
 
         mRankTextView.setText(cryptoAdapter.getRank());
         mIconImageView.setImageDrawable(cryptoAdapter.getIcon());
@@ -310,6 +316,28 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
             setIcon(R.drawable.tokencard_icon);
         } else if (mCrypto.contains("(VIA)")) {
             setIcon(R.drawable.viacoin_icon);
+        } else if (mCrypto.contains("(QTUM)")) {
+            setIcon(R.drawable.qtum_icon);
+        } else if (mCrypto.contains("(CVC)")) {
+            setIcon(R.drawable.civic_icon);
+        } else if (mCrypto.contains("(BDL)")) {
+            setIcon(R.drawable.bitdeal_icon);
+        } else if (mCrypto.contains("(PPT)")) {
+            setIcon(R.drawable.populous_icon);
+        } else if (mCrypto.contains("(OMG)")) {
+            setIcon(R.drawable.omisego_icon);
+        } else if (mCrypto.contains("(PART)")) {
+            setIcon(R.drawable.particl_icon);
+        } else if (mCrypto.contains("(PLR)")) {
+            setIcon(R.drawable.pillar_icon);
+        } else if (mCrypto.contains("(XRL)")) {
+            setIcon(R.drawable.rialto_icon);
+        } else if (mCrypto.contains("(ION)")) {
+            setIcon(R.drawable.ion_icon);
+        } else if (mCrypto.contains("(GOLOS)")) {
+            setIcon(R.drawable.golos_icon);
+        } else if (mCrypto.contains("(TAAS)")) {
+            setIcon(R.drawable.taas_icon);
         } else {
             mIconImageView.setImageDrawable(null);
         }

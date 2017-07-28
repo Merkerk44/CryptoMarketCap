@@ -9,11 +9,10 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -30,8 +29,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -55,33 +54,27 @@ import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    ///TODO Open crypto's website
-    ///TODO Widget
-    ///TODO Splash Screen -> boot
-    ///TODO Change default currency textColor
-    ///TODO Pinned coins in right order
-    ///TODO Refresh when closing settings panel
-    ///TODO Clarify data
+    // TODO Open crypto's website
 
     private final String _TAG = "CryptoMarketCap";
-    static String currentView = "";
 
-    private interface PERMISSIONS {
-        int REQUEST_NETWORK_STATE = 0x1;
-        int REQUEST_INTERNET = 0x2;
-    }
+    static String currentView = "";           // Used to get if user come from MainActivity or PinnedCoinsActivity
+    static String mRunningActivity;           // Used to get current running activity
 
-    private boolean isRunning = false;
-    private boolean canRefresh = false;
-    private boolean isFirstLaunch = true;
-    static boolean justClosedDialog = false;
+    private boolean isRunning = false;        // Used to check if app is running (to prevent DialogProgress error)
+    private boolean canRefresh = false;       // Used with autoRefresh function
+    private boolean isFirstLaunch = true;     // If is first launch, app will retrieve data
+    static boolean justClosedDialog = false;  // Check if user has closed MoreAboutCryptoDialog. If true, app don't retrieve data
+    static boolean needToBeRefreshed = false; // Used to refresh when user has left the settings panel
 
     static LinearLayout activityMain;
     private Toolbar mToolbar;
     RecyclerView recyclerView;
+    SwipeRefreshLayout swipeRefreshLayout;
+    private SharedPreferences sharedPreferences = null;
+
     private List<CryptoAdapter> cryptoAdapterList;
     private CryptoRvAdapter adapter;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     private interface TAG {
         String NAME = "name";
@@ -91,9 +84,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         String PRICE_GBP = "price_gbp";
         String PRICE_BTC = "price_btc";
         String PERCENT_CHANGE_24H = "percent_change_24h";
+        String TOTAL_MARKET_CAP_USD = "total_market_cap_usd";
+        String TOTAL_MARKET_CAP_EUR = "total_market_cap_eur";
+        String TOTAL_MARKET_CAP_GBP = "total_market_cap_gbp";
+        String TOTAL_MARKET_CAP_BTC = "total_market_cap_btc";
     }
 
-    private SharedPreferences sharedPreferences = null;
+    private interface PERMISSIONS {
+        int REQUEST_NETWORK_STATE = 0x1;
+        int REQUEST_INTERNET = 0x2;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,16 +147,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public void onStart() {
         super.onStart();
 
-        Log.d(_TAG, "On start\n" + isFirstLaunch);
         isRunning = true;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
 
-        //TODO Removing for release
-        /*TinyDB tinyDB = new TinyDB(getApplicationContext());
-        ArrayList<String> arrayList = new ArrayList<>();
-        tinyDB.putListString("pinned_coins", arrayList);*/
+        mRunningActivity = this.getClass().getSimpleName();
 
         // Check for permissions
         if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -188,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (connectionEnabled) {
                     if (isFirstLaunch && !justClosedDialog) {
                         new JSONParse().execute();
+                        new JSONGlobal().execute();
                         isFirstLaunch = false;
                     }
                 } else {
@@ -250,6 +247,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             isRunning = true;
             Log.d(_TAG, "ArrayList set");
         }
+
+        if (needToBeRefreshed) {
+            needToBeRefreshed = false;
+            new JSONParse().execute();
+        }
     }
 
     @Override
@@ -309,8 +311,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 startActivity(pinnedIntent);
                 break;
             case R.id.action_about:
-                AboutDialog aboutDialog = new AboutDialog();
-                aboutDialog.show(getSupportFragmentManager(), null);
+                /*AboutDialog aboutDialog = new AboutDialog();
+                aboutDialog.show(getSupportFragmentManager(), null);*/
+                Intent aboutIntent = new Intent(getApplicationContext(), AboutLayoutActivity.class);
+                startActivity(aboutIntent);
                 break;
             case R.id.action_settings:
                 Intent settingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -374,6 +378,113 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return filteredCryptoList;
     }
 
+    private class JSONGlobal extends AsyncTask<String, String, String> {
+        private String marketCap = "";
+        private final String urlAddress = "https://api.coinmarketcap.com/v1/global/?convert=" + getDefaultCurrency();
+
+        HttpURLConnection connection;
+        BufferedReader reader;
+        StringBuffer buffer;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            if (haveNetworkConnectionV2(getApplicationContext()) && isRunning) {
+                try {
+                    URL url = new URL(urlAddress);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+
+                    InputStream stream = connection.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    buffer = new StringBuffer();
+                    String line = "";
+
+                    while ((line = reader.readLine()) != null) {
+                        String append = line + "\n";
+                        buffer.append(append);
+                    }
+
+                    connection.disconnect();
+                    reader.close();
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (haveNetworkConnectionV2(getApplicationContext()) && isRunning) {
+                try {
+                    JSONObject jObj = new JSONObject(buffer.toString().trim());
+                    String _marketCap = "";
+                    char c0 = '0';
+                    char c1 = '1';
+                    char c2 = '2';
+
+                    String currency = getDefaultCurrency();
+                    switch (currency) {
+                        case "USD":
+                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_USD);
+                            c0 = _marketCap.charAt(0);
+                            c1 = _marketCap.charAt(2);
+                            c2 = _marketCap.charAt(3);
+                            marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                    String.valueOf(c1) +
+                                    "." +
+                                    String.valueOf(c2) +
+                                    " Md";
+                            break;
+                        case "EUR":
+                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_EUR);
+                            c0 = _marketCap.charAt(0);
+                            c1 = _marketCap.charAt(2);
+                            c2 = _marketCap.charAt(3);
+                            marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
+                                    String.valueOf(c1) +
+                                    "." +
+                                    String.valueOf(c2) +
+                                    " Md";
+                            break;
+                        case "GBP":
+                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_GBP);
+                            c0 = _marketCap.charAt(0);
+                            c1 = _marketCap.charAt(2);
+                            c2 = _marketCap.charAt(3);
+                            marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
+                                    String.valueOf(c1) +
+                                    "." +
+                                    String.valueOf(c2) +
+                                    " Md";
+                            break;
+                        case "BTC":
+                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_BTC);
+                            c0 = _marketCap.charAt(0);
+                            c1 = _marketCap.charAt(2);
+                            c2 = _marketCap.charAt(3);
+                            marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
+                                    String.valueOf(c1) +
+                                    "." +
+                                    String.valueOf(c2) +
+                                    " M";
+                            break;
+                    }
+
+                    Log.d(_TAG, _marketCap);
+                    Snackbar.make(activityMain, marketCap, Snackbar.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private class JSONParse extends AsyncTask<String, String, String> {
 
         boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
@@ -405,10 +516,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 swipeRefreshLayout.setRefreshing(false);
 
             if (connectionEnabled) {
-                /*progressDialog = new ProgressDialog(activityMain.getContext(), R.style.ProgressDialogTheme);
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
-                progressDialog.setMessage(getString(R.string.receiving_data));*/
                 progressDialog = new SpotsDialog(activityMain.getContext(), R.style.CustomProgressDialog);
 
                 if (isRunning)
@@ -527,31 +634,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
-    private int getSdkVer() {
-        return Build.VERSION.SDK_INT;
-    }
-
     /**
      * @return if user have network connection
      */
-    private boolean haveNetworkConnection() {
-        boolean wifiConnected = false;
-        boolean dataConnected = false;
-
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-        for (NetworkInfo ni : networkInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-                if (ni.isConnected())
-                    wifiConnected = true;
-            } else if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected())
-                    dataConnected = true;
-            }
-        }
-        return wifiConnected || dataConnected;
-    }
-
     private boolean haveNetworkConnectionV2(Context context) {
         ConnectivityManager conMgr = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

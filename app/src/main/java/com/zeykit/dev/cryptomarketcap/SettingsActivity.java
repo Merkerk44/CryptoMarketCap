@@ -1,6 +1,5 @@
 package com.zeykit.dev.cryptomarketcap;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
@@ -35,5 +34,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        MainActivity.needToBeRefreshed = true;
     }
 }

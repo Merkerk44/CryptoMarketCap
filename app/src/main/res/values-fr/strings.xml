@@ -1,18 +1,19 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">2.2.0</string>
+    <string name="app_version">2.5.1</string>
+    <string name="splash_screen_ver">Zeykit-Dev - v2.5.1</string>
     <string name="action_search">Rechercher</string>
     <string name="action_about">À Propos</string>
     <string name="action_settings">Paramètres</string>
     <string name="icon">Icône</string>
     <string name="search_hint">Crypto\'s name/symbol &#8230;</string>
-    <string name="receiving_data">Reception des données&#8230;</string>
+    <string name="receiving_data">Réception des données&#8230;</string>
     <string name="refreshing_preference_title">Paramètres d\'actualisation</string>
     <string name="auto_refresh_preference_title">Actualisation automatique</string>
     <string name="auto_refresh_summary">Met à jour les données du marché automatiquement</string>
     <string name="auto_refresh_delay">Temps entre chaque actualisation</string>
-    <string name="auto_refresh_delay_summary">Définie le temps entre chaque actualisation (en secondes)</string>
-    <string name="network_state_permission">Vous devez activer la permission d\'accès au status du réseau pour que cette application fonctionne. Allez dans vos paramètres d\'applications pour l\'activer.</string>
+    <string name="auto_refresh_delay_summary">Définit le temps entre chaque actualisation (en secondes)</string>
+    <string name="network_state_permission">Vous devez activer la permission d\'accès au statut du réseau pour que cette application fonctionne. Allez dans vos paramètres d\'applications pour l\'activer.</string>
     <string name="internet_permission">Vous devez activer la permission d\'accès à Internet pour que cette application fonctionne. Allez dans vos paramètres d\'applications pour l\'activer.</string>
     <string name="request_connection">Vous devez être connecté à un réseau Wi-Fi ou activer les données mobile.</string>
     <string name="got_it">COMPRIS</string>
@@ -21,14 +22,18 @@
     <string name="join_community">Rejoignez www.labaleine.gg : communauté francophone de crypto monnaies</string>
     <string name="donate_to_developer">Don au développeur (merci !)</string>
     <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
+    <string name="btc">1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
+    <string name="eth">0xDD353AF332EB94148949a3725871649B1a491147</string>
+    <string name="zec">t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
     <string name="eth_address">ETH : 0xDD353AF332EB94148949a3725871649B1a491147</string>
     <string name="etc_address">ETC : 0x070beae2fd4ba17e354600938d853f71efc97f88</string>
     <string name="zec_address">ZEC : t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
     <string name="sc_address">SC : b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7</string>
     <string name="app_not_found">Impossible de trouver une application de navigation</string>
+    <string name="mailing_app_not_found">Impossible de trouver une application de mail</string>
     <string name="copied_to_clipboard">adresse copiée au presse-papiers</string>
     <string name="current_version">Version actuelle</string>
-    <string name="check_for_updates">Vérifiez les mises à jour</string>
+    <string name="check_for_updates">Vérifier les mises à jour</string>
     <string name="currency_list_title">Devise par défaut</string>
     <string name="currency_list_summary">Définissez la devise que vous souhaitez afficher</string>
     <string name="pinned_coins">Monnaies épinglées</string>
@@ -53,11 +58,27 @@
     <string name="rta_yes">NOTER</string>
     <string name="rta_no">NON, MERCI</string>
     <string name="rta_cancel">PLUS TARD</string>
+    <string name="activity_to_launch">Activité à lancer</string>
+    <string name="activity_to_launch_summary">Définissez l\'activité à lancer au lancement de l\'application</string>
+    <string name="total_market_cap">Total Market Cap</string>
+    <string name="no_pinned_coins">Aucune monnaies épinglées</string>
+    <string name="report_a_bug">Signaler un bug</string>
+    <string name="share">Partager l\'application</string>
+    <string name="rate">Noter / Vérifier les mises à jour</string>
+    <string name="thanks_for_support">Merci de votre soutien !</string>
+    <string name="share_via">Partager l\'application via</string>
+    <string name="sharing_app_not_found">Impossible de trouver une application de partage</string>
+    <string name="share_content">Télécharge Crypto Market Cap ici</string>
 
     <string-array name="currencies_list">
         <item>USD</item>
         <item>EUR</item>
         <item>GBP</item>
         <item>BTC</item>
+    </string-array>
+
+    <string-array name="activities_list">
+        <item>Activité principale</item>
+        <item>Monnaies épinglées</item>
     </string-array>
 </resources>

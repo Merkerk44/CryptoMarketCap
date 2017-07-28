@@ -13,10 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,10 +24,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
@@ -52,7 +50,9 @@ public class PinnedCoinsActivity extends AppCompatActivity {
 
     static boolean initialized = false;
 
-    static String pinnedCoins = "";
+    static String pinnedCoinsStr = "";
+
+    private ArrayList<String> pinnedCoins;
 
     private interface TAG {
         String RANK = "rank";
@@ -76,7 +76,7 @@ public class PinnedCoinsActivity extends AppCompatActivity {
 
         tinyDB = new TinyDB(getApplicationContext());
         if (tinyDB.getString("pinned_coins").isEmpty()) {
-            CryptoAdapter cryptoAdapter = new CryptoAdapter("", null, "No pinned coins", "", "");
+            CryptoAdapter cryptoAdapter = new CryptoAdapter("", null, getString(R.string.no_pinned_coins), "", "");
             cryptoAdapterList.add(cryptoAdapter);
 
             adapter.notifyDataSetChanged();
@@ -95,7 +95,11 @@ public class PinnedCoinsActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
+        MainActivity.mRunningActivity = this.getClass().getSimpleName();
+
         tinyDB = new TinyDB(getApplicationContext());
+        pinnedCoins = tinyDB.getListString("pinned_coins");
+        Collections.reverse(pinnedCoins);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         if (!tinyDB.getString("pinned_coins").isEmpty()) {
@@ -110,6 +114,11 @@ public class PinnedCoinsActivity extends AppCompatActivity {
         }
 
         Log.d("CryptoMarketCap", sharedPreferences.getString("pinned_coins", ""));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
@@ -131,6 +140,16 @@ public class PinnedCoinsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return onOptionsItemSelected(item);
+    }
+
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new WrapContentLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         cryptoAdapterList = new ArrayList<>();
@@ -139,27 +158,8 @@ public class PinnedCoinsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private boolean haveNetworkConnection() {
-        boolean wifiConnected = false;
-        boolean dataConnected = false;
-
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-        for (NetworkInfo ni : networkInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-                if (ni.isConnected())
-                    wifiConnected = true;
-            } else if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected())
-                    dataConnected = true;
-            }
-        }
-        return wifiConnected || dataConnected;
-    }
-
     private class JSONParse extends AsyncTask<String, String, String> {
 
-        private ArrayList<String> pinnedCoins = tinyDB.getListString("pinned_coins");
         private String pinnedCoin = "";
         private String apiAddress = "https://api.coinmarketcap.com/v1/ticker/";
 
@@ -318,7 +318,7 @@ public class PinnedCoinsActivity extends AppCompatActivity {
     }
 
     private void storePinnedCoinsPref() {
-        pinnedCoins = sharedPreferences.getString("pinned_coins", "");
+        pinnedCoinsStr = sharedPreferences.getString("pinned_coins", "");
     }
 
     private String getDefaultCurrency() {

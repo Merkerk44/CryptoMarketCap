@@ -9,6 +9,7 @@
             android:key="array_size"
             android:selectAllOnFocus="true"
             android:singleLine="true"
+            android:inputType="number"
             android:title="@string/array_size"
             android:summary="@string/array_size_summary"/>
 
@@ -28,6 +29,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="Launching preferences">
+
+        <ListPreference
+            android:defaultValue="Main Activity"
+            android:entries="@array/activities_list"
+            android:entryValues="@array/activities_list"
+            android:key="launching_preference"
+            android:title="@string/activity_to_launch"
+            android:summary="@string/activity_to_launch_summary">
+        </ListPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/refreshing_preference_title"
         android:key="pref_refreshing_settings">
 
@@ -42,6 +56,7 @@
             android:key="auto_refresh_delay"
             android:selectAllOnFocus="true"
             android:singleLine="true"
+            android:inputType="number"
             android:title="@string/auto_refresh_delay"
             android:summary="@string/auto_refresh_delay_summary"
             android:dependency="auto_refresh_switch"/>

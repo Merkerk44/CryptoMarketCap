@@ -16,14 +16,16 @@
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1"/>
+        <activity android:name=".SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".PinnedCoinsActivity"
@@ -46,6 +48,16 @@
                 android:value=".MainActivity"/>
         </activity>
         <activity
+            android:name=".AboutLayoutActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AboutTheme"
+            android:label="@string/action_about"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity
             android:name=".MoreAboutCryptoDialog"
             android:theme="@android:style/Theme.Dialog"
             android:label="@string/show_more_data"
@@ -56,5 +68,4 @@
                 android:value=".MainActivity"/>
         </activity>
     </application>
-
 </manifest>

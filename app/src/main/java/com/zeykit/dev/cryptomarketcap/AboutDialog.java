@@ -87,6 +87,15 @@ public class AboutDialog extends DialogFragment {
             }
         });
 
+        zecTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copyToClipboard(CRYPTO_ADDR.ZEC);
+                String str = "ZEC " + getString(R.string.copied_to_clipboard);
+                showSnackBar(rootView, str, Snackbar.LENGTH_SHORT);
+            }
+        });
+
         checkForUpdateTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,6 +123,7 @@ public class AboutDialog extends DialogFragment {
         joinCommunityTextView = (TextView) view.findViewById(R.id.joinCommunityTextView);
         btcTextView = (TextView) view.findViewById(R.id.btcTextView);
         ethTextView = (TextView) view.findViewById(R.id.ethTextView);
+        zecTextView = (TextView) view.findViewById(R.id.zecTextView);
         checkForUpdateTextView = (TextView) view.findViewById(R.id.checkForUpdateTextView);
         gotItButton = (Button) view.findViewById(R.id.aboutGotItButton);
 
