@@ -96,11 +96,23 @@ public class MoreAboutCryptoDialog extends Activity {
             cryptoName[0] = "library-credit";
         if (cryptoName[0].contains("I/O"))
             cryptoName[0] = "iocoin";
+        if (cryptoName[0].contains("Metaverse"))
+            cryptoName[0] = "metaverse";
+        if (cryptoName[0].contains("WeTrust"))
+            cryptoName[0] = "trust";
+        if (cryptoName[0].contains("Cofound.it"))
+            cryptoName[0] = "cofound-it";
+        if (cryptoName[0].contains("Santiment"))
+            cryptoName[0] = "santiment";
+        if (cryptoName[0].contains("Matchpool"))
+            cryptoName[0] = "guppy";
+        if (cryptoName[0].contains("MUSE"))
+            cryptoName[0] = "bitshares-music";
 
         init();
         setupRecyclerView();
 
-        Button gotItBtn = (Button) findViewById(R.id.cryptoAboutGotItButton);
+        Button gotItBtn = findViewById(R.id.cryptoAboutGotItButton);
         gotItBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

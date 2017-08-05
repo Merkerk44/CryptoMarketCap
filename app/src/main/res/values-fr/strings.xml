@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">2.5.1</string>
-    <string name="splash_screen_ver">Zeykit-Dev - v2.5.1</string>
+    <string name="app_version">2.5.6</string>
+    <string name="splash_screen_ver">Zeykit-Dev - v2.5.6</string>
     <string name="action_search">Rechercher</string>
     <string name="action_about">À Propos</string>
     <string name="action_settings">Paramètres</string>
@@ -19,7 +19,7 @@
     <string name="got_it">COMPRIS</string>
     <string name="developed_by_zeykit_dev">Développé par Zeykit-Dev</string>
     <string name="market_data_from">Les données du marché proviennent de CoinMarketCap.com</string>
-    <string name="join_community">Rejoignez www.labaleine.gg : communauté francophone de crypto monnaies</string>
+    <string name="join_community">Rejoignez LaBaleine : communauté francophone de crypto monnaies</string>
     <string name="donate_to_developer">Don au développeur (merci !)</string>
     <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
     <string name="btc">1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
@@ -69,6 +69,9 @@
     <string name="share_via">Partager l\'application via</string>
     <string name="sharing_app_not_found">Impossible de trouver une application de partage</string>
     <string name="share_content">Télécharge Crypto Market Cap ici</string>
+    <string name="something_goes_wrong">Quelque chose ne va pas, essayez de rafraîchir et vérifiez votre connexion Internet.</string>
+    <string name="no_website">Aucun site disponible actuellement.</string>
+    <string name="github">Crypto Market Cap est une application open-source disponnible sur GitHub</string>
 
     <string-array name="currencies_list">
         <item>USD</item>

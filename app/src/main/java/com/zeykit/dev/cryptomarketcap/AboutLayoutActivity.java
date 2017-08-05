@@ -5,9 +5,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +28,8 @@ public class AboutLayoutActivity extends AppCompatActivity {
     }
 
     private void init() {
-        aboutActivityLayout = (LinearLayout) findViewById(R.id.aboutLayout);
-        recyclerView = (RecyclerView) findViewById(R.id.aboutRecyclerView);
+        aboutActivityLayout = findViewById(R.id.aboutLayout);
+        recyclerView = findViewById(R.id.aboutRecyclerView);
     }
 
     private void setupActionBar() {
@@ -47,7 +45,7 @@ public class AboutLayoutActivity extends AppCompatActivity {
 
         adapterList = new ArrayList<>();
 
-        AboutLayoutAdapter mAdapter = new AboutLayoutAdapter();
+        AboutLayoutAdapter mAdapter;
         mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_code), getString(R.string.developed_by_zeykit_dev));
         adapterList.add(0, mAdapter);
         mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_labaleine), getString(R.string.join_community));
@@ -64,6 +62,8 @@ public class AboutLayoutActivity extends AppCompatActivity {
         adapterList.add(6, mAdapter);
         mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_bug), getString(R.string.report_a_bug));
         adapterList.add(7, mAdapter);
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_github), getString(R.string.github));
+        adapterList.add(8, mAdapter);
 
         adapter = new AboutLayoutRvAdapter(adapterList);
         recyclerView.setAdapter(adapter);

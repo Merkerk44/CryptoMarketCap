@@ -26,11 +26,11 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
 
         context = v.getContext();
 
-        mRankTextView = (TextView) v.findViewById(R.id.rankTextView);
-        mIconImageView = (ImageView) v.findViewById(R.id.iconImageView);
-        mNameTextView = (TextView) v.findViewById(R.id.nameTextView);
-        mPriceTextView = (TextView) v.findViewById(R.id.priceTextView);
-        mPercentChangeTextView = (TextView) v.findViewById(R.id.percentChangeTextView);
+        mRankTextView = v.findViewById(R.id.rankTextView);
+        mIconImageView = v.findViewById(R.id.iconImageView);
+        mNameTextView = v.findViewById(R.id.nameTextView);
+        mPriceTextView = v.findViewById(R.id.priceTextView);
+        mPercentChangeTextView = v.findViewById(R.id.percentChangeTextView);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -338,7 +338,88 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
             setIcon(R.drawable.golos_icon);
         } else if (mCrypto.contains("(TAAS)")) {
             setIcon(R.drawable.taas_icon);
-        } else {
+        } else if (mCrypto.contains("(PLBT)")) {
+            setIcon(R.drawable.polybius_icon);
+        } else if (mCrypto.contains("(FRST)")) {
+            setIcon(R.drawable.firstcoin_icon);
+        } else if (mCrypto.contains("(ECOB)")) {
+            setIcon(R.drawable.ecobit_icon);
+        } else if (mCrypto.contains("(SAFEX)")) {
+            setIcon(R.drawable.safeexchangecoin_icon);
+        } else if (mCrypto.contains("(NAV)")) {
+            setIcon(R.drawable.navcoin_icon);
+        } else if (mCrypto.contains("(EAC)")) {
+            setIcon(R.drawable.earthcoin_icon);
+        } else if (mCrypto.contains("(FAIR)")) {
+            setIcon(R.drawable.faircoin_icon);
+        } else if (mCrypto.contains("(MOON)")) {
+            setIcon(R.drawable.mooncoin_icon);
+        } else if (mCrypto.contains("(XDN)")) {
+            setIcon(R.drawable.digitalnote_icon);
+        } else if (mCrypto.contains("(ETP)")) {
+            setIcon(R.drawable.metaverse_icon);
+        } else if (mCrypto.contains("(WGR)")) {
+            setIcon(R.drawable.wagerr_icon);
+        } else if (mCrypto.contains("(SNM)")) {
+            setIcon(R.drawable.sonm_icon);
+        } else if (mCrypto.contains("(EXP)")) {
+            setIcon(R.drawable.expanse_icon);
+        } else if (mCrypto.contains("(DTB)")) {
+            setIcon(R.drawable.databits_icon);
+        } else if (mCrypto.contains("(AGRS)")) {
+            setIcon(R.drawable.agorastokens_icon);
+        } else if (mCrypto.contains("(TRST)")) {
+            setIcon(R.drawable.trust_icon);
+        } else if (mCrypto.contains("(B@)")) {
+            setIcon(R.drawable.bankcoin_icon);
+        } else if (mCrypto.contains("(VOX)")) {
+            setIcon(R.drawable.voxels_icon);
+        } else if (mCrypto.contains("(CRW)")) {
+            setIcon(R.drawable.crown_icon);
+        } else if (mCrypto.contains("(GRC)")) {
+            setIcon(R.drawable.gridcoin_icon);
+        } else if (mCrypto.contains("(MUSE)")) {
+            setIcon(R.drawable.bitsharesmusic_icon);
+        } else if (mCrypto.contains("(RADS)")) {
+            setIcon(R.drawable.radium_icon);
+        } else if (mCrypto.contains("(SAN)")) {
+            setIcon(R.drawable.santiment_icon);
+        } else if (mCrypto.contains("(NEOS)")) {
+            setIcon(R.drawable.neoscoin_icon);
+        } else if (mCrypto.contains("(CFI)")) {
+            setIcon(R.drawable.cofoundit_icon);
+        } else if (mCrypto.contains("(EB3)")) {
+            setIcon(R.drawable.eb3coin_icon);
+        } else if (mCrypto.contains("(BCAP)")) {
+            setIcon(R.drawable.bcap_icon);
+        } else if (mCrypto.contains("(MUE)")) {
+            setIcon(R.drawable.monetaryunit_icon);
+        } else if (mCrypto.contains("(ENRG)")) {
+            setIcon(R.drawable.energycoin_icon);
+        } else if (mCrypto.contains("(BCH)")) {
+            setIcon(R.drawable.bitcoincash_icon);
+        } else if (mCrypto.contains("(TIME)")) {
+            setIcon(R.drawable.chronobank_icon);
+        } else if (mCrypto.contains("(NXC)")) {
+            setIcon(R.drawable.nexium_icon);
+        } else if (mCrypto.contains("(PTOY)")) {
+            setIcon(R.drawable.patientory_icon);
+        } else if (mCrypto.contains("(WCT)")) {
+            setIcon(R.drawable.wavescommunitytoken_icon);
+        } else if (mCrypto.contains("(IFC)")) {
+            setIcon(R.drawable.infinitecoin_icon);
+        } else if (mCrypto.contains("(PLU)")) {
+            setIcon(R.drawable.pluton_icon);
+        } else if (mCrypto.contains("(BASH)")) {
+            setIcon(R.drawable.luckchain_icon);
+        } else if (mCrypto.contains("(BNB)")) {
+            setIcon(R.drawable.binancecoin_icon);
+        } else if (mCrypto.contains("(NET)")) {
+            setIcon(R.drawable.nimiq_icon);
+        } else if (mCrypto.contains("(BITCNY)")) {
+            setIcon(R.drawable.bitcny_icon);
+        }
+        else {
             mIconImageView.setImageDrawable(null);
         }
     }

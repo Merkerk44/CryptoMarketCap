@@ -30,7 +30,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -53,8 +53,6 @@ import java.util.List;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
-
-    // TODO Open crypto's website
 
     private final String _TAG = "CryptoMarketCap";
 
@@ -103,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         init();
         setupToolbar();
         setupRecyclerView();
+        rateMyApp();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -113,14 +112,25 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         });
     }
 
+    private void rateMyApp() {
+        RateThisApp.onCreate(activityMain.getContext());
+        RateThisApp.Config config = new RateThisApp.Config(7, 10);
+        config.setTitle(R.string.rta_title);
+        config.setMessage(R.string.rta_message);
+        config.setYesButtonText(R.string.rta_yes);
+        config.setNoButtonText(R.string.rta_no);
+        config.setCancelButtonText(R.string.rta_cancel);
+        RateThisApp.init(config);
+    }
+
     /**
      * Elements initialization
      */
     private void init() {
-        activityMain = (LinearLayout) findViewById(R.id.activity_main);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        activityMain = findViewById(R.id.activity_main);
+        mToolbar = findViewById(R.id.toolbar);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        recyclerView = findViewById(R.id.recyclerView);
     }
 
     /**
@@ -185,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     if (isFirstLaunch && !justClosedDialog) {
                         new JSONParse().execute();
                         new JSONGlobal().execute();
-                        isFirstLaunch = false;
                     }
                 } else {
                     showConnectionDialog();
@@ -250,14 +259,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         if (needToBeRefreshed) {
             needToBeRefreshed = false;
+            cryptoAdapterList.clear();
+            adapter.notifyDataSetChanged();
             new JSONParse().execute();
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
+    private void storeData() {
         Type listOfObjects = new TypeToken<List<CryptoAdapter>>(){}.getType();
         Gson gson = new Gson();
         String strObj = gson.toJson(cryptoAdapterList, listOfObjects);
@@ -268,7 +276,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         editor.apply();
 
         Log.d(_TAG, sharedPreferences.getString("stored_rv_data", strObj));
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        storeData();
         isRunning = false;
     }
 
@@ -282,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         // Setting up the searchView style
         searchView.setQueryHint(Html.fromHtml("<font color = #373839>" + getResources().getString(R.string.search_hint) + "</font>"));
-        SearchView.SearchAutoComplete textArea = (SearchView.SearchAutoComplete) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        SearchView.SearchAutoComplete textArea = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         textArea.setTextColor(Color.WHITE);
         searchView.setOnQueryTextListener(this);
 
@@ -410,76 +423,100 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     connection.disconnect();
                     reader.close();
                     stream.close();
+
+                    return buffer.toString().trim();
+
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
+
             return null;
         }
 
         @Override
         protected void onPostExecute(String result) {
             if (haveNetworkConnectionV2(getApplicationContext()) && isRunning) {
-                try {
-                    JSONObject jObj = new JSONObject(buffer.toString().trim());
-                    String _marketCap = "";
-                    char c0 = '0';
-                    char c1 = '1';
-                    char c2 = '2';
+                if (result != null) {
+                    try {
+                        JSONObject jObj = new JSONObject(result);
+                        String _marketCap = "";
+                        char c0, c1, c2, c3 = 'c';
 
-                    String currency = getDefaultCurrency();
-                    switch (currency) {
-                        case "USD":
-                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_USD);
-                            c0 = _marketCap.charAt(0);
-                            c1 = _marketCap.charAt(2);
-                            c2 = _marketCap.charAt(3);
-                            marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
-                                    String.valueOf(c1) +
-                                    "." +
-                                    String.valueOf(c2) +
-                                    " Md";
-                            break;
-                        case "EUR":
-                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_EUR);
-                            c0 = _marketCap.charAt(0);
-                            c1 = _marketCap.charAt(2);
-                            c2 = _marketCap.charAt(3);
-                            marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
-                                    String.valueOf(c1) +
-                                    "." +
-                                    String.valueOf(c2) +
-                                    " Md";
-                            break;
-                        case "GBP":
-                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_GBP);
-                            c0 = _marketCap.charAt(0);
-                            c1 = _marketCap.charAt(2);
-                            c2 = _marketCap.charAt(3);
-                            marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
-                                    String.valueOf(c1) +
-                                    "." +
-                                    String.valueOf(c2) +
-                                    " Md";
-                            break;
-                        case "BTC":
-                            _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_BTC);
-                            c0 = _marketCap.charAt(0);
-                            c1 = _marketCap.charAt(2);
-                            c2 = _marketCap.charAt(3);
-                            marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
-                                    String.valueOf(c1) +
-                                    "." +
-                                    String.valueOf(c2) +
-                                    " M";
-                            break;
+                        String currency = getDefaultCurrency();
+                        switch (currency) {
+                            case "USD":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_USD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " Md";
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " Md";
+                                }
+                                break;
+                            case "EUR":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_EUR);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        "." +
+                                        String.valueOf(c2) +
+                                        " Md";
+                                break;
+                            case "GBP":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_GBP);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        "." +
+                                        String.valueOf(c2) +
+                                        " Md";
+                                break;
+                            case "BTC":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_BTC);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        "." +
+                                        String.valueOf(c2) +
+                                        " M";
+                                break;
+                            default:
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_USD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        "." +
+                                        String.valueOf(c2) +
+                                        " Md";
+                                break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
 
-                    Log.d(_TAG, _marketCap);
                     Snackbar.make(activityMain, marketCap, Snackbar.LENGTH_LONG).show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -492,7 +529,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         private String defaultCurrency = getDefaultCurrency();
         private final String urlAddress = "https://api.coinmarketcap.com/v1/ticker/?convert=" + defaultCurrency + "&limit=" + arraySizeToDisplay();
 
-        //private ProgressDialog progressDialog;
         private SpotsDialog progressDialog;
 
         private CryptoAdapter cryptoAdapter = new CryptoAdapter();
@@ -538,30 +574,35 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             HttpURLConnection connection;
             BufferedReader reader;
 
-            if (connectionEnabled && isRunning) {
-                try {
-                    URL url = new URL(urlAddress);
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.connect();
+            if (connectionEnabled) {
+                if (isRunning) {
+                    try {
+                        URL url = new URL(urlAddress);
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.connect();
 
-                    InputStream stream = connection.getInputStream();
+                        InputStream stream = connection.getInputStream();
 
-                    reader = new BufferedReader(new InputStreamReader(stream));
+                        reader = new BufferedReader(new InputStreamReader(stream));
 
-                    buffer = new StringBuffer();
-                    String line = "";
+                        buffer = new StringBuffer();
+                        String line = "";
 
-                    while ((line = reader.readLine()) != null) {
-                        String append = line + "\n";
-                        buffer.append(append);
+                        while ((line = reader.readLine()) != null) {
+                            String append = line + "\n";
+                            buffer.append(append);
+                        }
+
+                        connection.disconnect();
+                        reader.close();
+                        stream.close();
+
+                        return buffer.toString();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
                     }
-
-                    connection.disconnect();
-                    reader.close();
-                    stream.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -576,60 +617,61 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected void onPostExecute(String result) {
             if (connectionEnabled && isRunning) {
-                try {
-                    jArray = new JSONArray(buffer.toString());
+                if (result != null) {
+                    try {
+                        jArray = new JSONArray(result);
 
-                    for (int i = 0; i < jArray.length(); i++) {
-                        jObj = jArray.getJSONObject(i);
+                        for (int i = 0; i < jArray.length(); i++) {
+                            jObj = jArray.getJSONObject(i);
 
-                        _rank = (i + 1);
-                        rank = String.valueOf(_rank);
-                        name = jObj.getString(TAG.NAME);
-                        symbol = "(" + jObj.getString(TAG.SYMBOL) + ")";
+                            _rank = (i + 1);
+                            rank = String.valueOf(_rank);
+                            name = jObj.getString(TAG.NAME);
+                            symbol = "(" + jObj.getString(TAG.SYMBOL) + ")";
 
-                        switch (defaultCurrency) {
-                            case "USD":
-                                price = "$" + jObj.getString(TAG.PRICE_USD);
-                                break;
-                            case "EUR":
-                                price = "€" + jObj.getString(TAG.PRICE_EUR);
-                                break;
-                            case "GBP":
-                                price = "£" + jObj.getString(TAG.PRICE_GBP);
-                                break;
-                            case "BTC":
-                                price = "฿" + jObj.getString(TAG.PRICE_BTC);
-                                break;
+                            switch (defaultCurrency) {
+                                case "USD":
+                                    price = "$" + jObj.getString(TAG.PRICE_USD);
+                                    break;
+                                case "EUR":
+                                    price = "€" + jObj.getString(TAG.PRICE_EUR);
+                                    break;
+                                case "GBP":
+                                    price = "£" + jObj.getString(TAG.PRICE_GBP);
+                                    break;
+                                case "BTC":
+                                    price = "฿" + jObj.getString(TAG.PRICE_BTC);
+                                    break;
+                            }
+
+                            percentChange = jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
+
+                            cryptoAdapter = new CryptoAdapter(rank, null, name + "\n" + symbol, price, percentChange);
+
+                            cryptoAdapterList.add(i, cryptoAdapter);
+
+                            adapter.notifyDataSetChanged();
                         }
-
-                        percentChange = jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
-
-                        cryptoAdapter = new CryptoAdapter(rank, null, name + "\n" + symbol, price, percentChange);
-
-                        cryptoAdapterList.add(i, cryptoAdapter);
-
-                        adapter.notifyItemInserted(i);
-                        adapter.notifyDataSetChanged();
+                    } catch (JSONException | NullPointerException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException | NullPointerException e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.something_goes_wrong), Toast.LENGTH_SHORT).show();
                 }
             }
 
-            if (progressDialog != null)
-                progressDialog.dismiss();
+            try {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            } catch (IllegalArgumentException e){
+                e.printStackTrace();
+                progressDialog = null;
+            }
 
             if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);
 
-            RateThisApp.onCreate(activityMain.getContext());
-            RateThisApp.Config config = new RateThisApp.Config(7, 10);
-            config.setTitle(R.string.rta_title);
-            config.setMessage(R.string.rta_message);
-            config.setYesButtonText(R.string.rta_yes);
-            config.setNoButtonText(R.string.rta_no);
-            config.setCancelButtonText(R.string.rta_cancel);
-            RateThisApp.init(config);
             RateThisApp.showRateDialogIfNeeded(activityMain.getContext(), R.style.AlertDialog);
         }
     }

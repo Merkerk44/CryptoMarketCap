@@ -74,28 +74,13 @@ public class PinnedCoinsActivity extends AppCompatActivity {
         setupActionBar();
         setupRecyclerView();
 
-        tinyDB = new TinyDB(getApplicationContext());
+        /*tinyDB = new TinyDB(getApplicationContext());
         if (tinyDB.getString("pinned_coins").isEmpty()) {
             CryptoAdapter cryptoAdapter = new CryptoAdapter("", null, getString(R.string.no_pinned_coins), "", "");
             cryptoAdapterList.add(cryptoAdapter);
 
             adapter.notifyDataSetChanged();
-        }
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                cryptoAdapterList.clear();
-                new JSONParse().execute();
-            }
-        });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        MainActivity.mRunningActivity = this.getClass().getSimpleName();
+        }*/
 
         tinyDB = new TinyDB(getApplicationContext());
         pinnedCoins = tinyDB.getListString("pinned_coins");
@@ -111,9 +96,28 @@ public class PinnedCoinsActivity extends AppCompatActivity {
             } else {
                 showConnectionDialog();
             }
+        } else {
+            CryptoAdapter cryptoAdapter = new CryptoAdapter("", null, getString(R.string.no_pinned_coins), "", "");
+            cryptoAdapterList.add(cryptoAdapter);
+            adapter.notifyDataSetChanged();
         }
 
         Log.d("CryptoMarketCap", sharedPreferences.getString("pinned_coins", ""));
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                cryptoAdapterList.clear();
+                new JSONParse().execute();
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        MainActivity.mRunningActivity = this.getClass().getSimpleName();
     }
 
     @Override
@@ -128,9 +132,9 @@ public class PinnedCoinsActivity extends AppCompatActivity {
     }
 
     private void init() {
-        recyclerView = (RecyclerView) findViewById(R.id.pinnedRecyclerView);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.pinnedSwipeRefreshLayout);
-        pinnedCoinsLayout = (LinearLayout) findViewById(R.id.pinned_coins_layout);
+        recyclerView = findViewById(R.id.pinnedRecyclerView);
+        swipeRefreshLayout = findViewById(R.id.pinnedSwipeRefreshLayout);
+        pinnedCoinsLayout = findViewById(R.id.pinned_coins_layout);
     }
 
     private void setupActionBar() {
@@ -230,7 +234,6 @@ public class PinnedCoinsActivity extends AppCompatActivity {
                     cryptoAdapter = new CryptoAdapter(rank, null, name + "\n" + symbol, price, percentChange);
                     cryptoAdapterList.add(j, cryptoAdapter);
 
-                    adapter.notifyItemInserted(j);
                     adapter.notifyDataSetChanged();
                 }
             } catch (JSONException e) {
@@ -269,7 +272,18 @@ public class PinnedCoinsActivity extends AppCompatActivity {
                                 pinnedCoin = "library-credit";
                             } else if (pinnedCoins.get(i).contains("I/O")) {
                                 pinnedCoin = "iocoin";
-                            } else {
+                            } else if (pinnedCoins.get(i).contains("Metaverse")) {
+                                pinnedCoin = "metaverse";
+                            } else if (pinnedCoins.get(i).contains("WeTrust")) {
+                                pinnedCoin = "trust";
+                            } else if (pinnedCoins.get(i).contains("Cofound.it")) {
+                                pinnedCoin = "cofound-it";
+                            } else if (pinnedCoins.get(i).contains("Santiment")) {
+                                pinnedCoin = "santiment";
+                            } else if (pinnedCoins.get(i).contains("Matchpool")) {
+                                pinnedCoin = "guppy";
+                            }
+                            else {
                                 pinnedCoin = pinnedCoins.get(i);
                             }
 
@@ -307,8 +321,14 @@ public class PinnedCoinsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            if (progressDialog != null)
-                progressDialog.dismiss();
+            try {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                progressDialog = null;
+            }
 
             if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);

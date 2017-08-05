@@ -44,17 +44,17 @@ public class AboutCryptoViewHolder extends RecyclerView.ViewHolder {
 
         context = v.getContext();
 
-        mRankTextView = (TextView) v.findViewById(R.id.cryptoAboutRank);
-        mIconImageView = (ImageView) v.findViewById(R.id.cryptoAboutIcon);
-        mNameTextView = (TextView) v.findViewById(R.id.cryptoAboutName);
-        mPriceTextView = (TextView) v.findViewById(R.id.cryptoAboutPrice);
-        mMarketCap = (TextView) v.findViewById(R.id.cryptoAboutMarketCap);
-        mCirculatingSupply = (TextView) v.findViewById(R.id.cryptoAboutCirculatingSupply);
-        mVolume = (TextView) v.findViewById(R.id.cryptoAboutVolume);
-        mPercentChange1h = (TextView) v.findViewById(R.id.cryptoAboutPercentChange1h);
-        mPercentChange24h = (TextView) v.findViewById(R.id.cryptoAboutPercentChange24h);
-        mPercentChange7d = (TextView) v.findViewById(R.id.cryptoAboutPercentChange7d);
-        mPinImageView = (ImageView) v.findViewById(R.id.cryptoAboutPinIcon);
+        mRankTextView = v.findViewById(R.id.cryptoAboutRank);
+        mIconImageView = v.findViewById(R.id.cryptoAboutIcon);
+        mNameTextView = v.findViewById(R.id.cryptoAboutName);
+        mPriceTextView = v.findViewById(R.id.cryptoAboutPrice);
+        mMarketCap = v.findViewById(R.id.cryptoAboutMarketCap);
+        mCirculatingSupply = v.findViewById(R.id.cryptoAboutCirculatingSupply);
+        mVolume = v.findViewById(R.id.cryptoAboutVolume);
+        mPercentChange1h = v.findViewById(R.id.cryptoAboutPercentChange1h);
+        mPercentChange24h = v.findViewById(R.id.cryptoAboutPercentChange24h);
+        mPercentChange7d = v.findViewById(R.id.cryptoAboutPercentChange7d);
+        mPinImageView = v.findViewById(R.id.cryptoAboutPinIcon);
 
         tinyDB = new TinyDB(context);
         getList = tinyDB.getListString("pinned_coins");
@@ -108,6 +108,8 @@ public class AboutCryptoViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 if (!cryptoWebsite.equals("noUrl")) {
                     openCryptoWebsite(context, cryptoWebsite);
+                } else {
+                    Toast.makeText(context, context.getString(R.string.no_website), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -565,7 +567,128 @@ public class AboutCryptoViewHolder extends RecyclerView.ViewHolder {
         } else if (mCrypto.contains("(TAAS)")) {
             setIcon(R.drawable.taas_icon);
             cryptoWebsite = "https://taas.fund/";
-        } else {
+        } else if (mCrypto.contains("(PLBT)")) {
+            setIcon(R.drawable.polybius_icon);
+            cryptoWebsite = "https://polybius.io/";
+        } else if (mCrypto.contains("(FRST)")) {
+            setIcon(R.drawable.firstcoin_icon);
+            cryptoWebsite = "http://firstcoinproject.com/";
+        } else if (mCrypto.contains("(ECOB)")) {
+            setIcon(R.drawable.ecobit_icon);
+            cryptoWebsite = "http://www.ecobit.io/";
+        } else if (mCrypto.contains("(SAFEX)")) {
+            setIcon(R.drawable.safeexchangecoin_icon);
+            cryptoWebsite = "http://safex.io/";
+        } else if (mCrypto.contains("(NAV)")) {
+            setIcon(R.drawable.navcoin_icon);
+            cryptoWebsite = "http://www.navcoin.org/";
+        } else if (mCrypto.contains("(EAC)")) {
+            setIcon(R.drawable.earthcoin_icon);
+            cryptoWebsite = "http://getearthcoin.com/";
+        } else if (mCrypto.contains("(FAIR)")) {
+            setIcon(R.drawable.faircoin_icon);
+            cryptoWebsite = "http://fair-coin.org/";
+        } else if (mCrypto.contains("(MOON)")) {
+            setIcon(R.drawable.mooncoin_icon);
+            cryptoWebsite = "http://mooncoin.com/";
+        } else if (mCrypto.contains("(XDN)")) {
+            setIcon(R.drawable.digitalnote_icon);
+            cryptoWebsite = "http://digitalnote.org/";
+        } else if (mCrypto.contains("(ETP)")) {
+            setIcon(R.drawable.metaverse_icon);
+            cryptoWebsite = "https://mvs.org/";
+        } else if (mCrypto.contains("(WGR)")) {
+            setIcon(R.drawable.wagerr_icon);
+            cryptoWebsite = "https://www.wagerr.com/";
+        } else if (mCrypto.contains("(SNM)")) {
+            setIcon(R.drawable.sonm_icon);
+            cryptoWebsite = "https://sonm.io/";
+        } else if (mCrypto.contains("(EXP)")) {
+            setIcon(R.drawable.expanse_icon);
+            cryptoWebsite = "http://www.expanse.tech/";
+        } else if (mCrypto.contains("(DTB)")) {
+            setIcon(R.drawable.databits_icon);
+            cryptoWebsite = "http://www.augmentorsgame.com/";
+        } else if (mCrypto.contains("(AGRS)")) {
+            setIcon(R.drawable.agorastokens_icon);
+            cryptoWebsite = "http://www.idni.org/";
+        } else if (mCrypto.contains("(TRST)")) {
+            setIcon(R.drawable.trust_icon);
+            cryptoWebsite = "https://www.wetrust.io/";
+        } else if (mCrypto.contains("(B@)")) {
+            setIcon(R.drawable.bankcoin_icon);
+            cryptoWebsite = "http://bankcoin.global/";
+        } else if (mCrypto.contains("(VOX)")) {
+            setIcon(R.drawable.voxels_icon);
+            cryptoWebsite = "https://www.voxelus.com/";
+        } else if (mCrypto.contains("(CRW)")) {
+            setIcon(R.drawable.crown_icon);
+            cryptoWebsite = "http://crown.tech/";
+        } else if (mCrypto.contains("(GRC)")) {
+            setIcon(R.drawable.gridcoin_icon);
+            cryptoWebsite = "http://www.gridcoin.us/";
+        } else if (mCrypto.contains("(MUSE)")) {
+            setIcon(R.drawable.bitsharesmusic_icon);
+            cryptoWebsite = "http://peertracks.com/";
+        } else if (mCrypto.contains("(RADS)")) {
+            setIcon(R.drawable.radium_icon);
+            cryptoWebsite = "https://radiumcore.org/";
+        } else if (mCrypto.contains("(SAN)")) {
+            setIcon(R.drawable.santiment_icon);
+            cryptoWebsite = "https://santiment.net/";
+        } else if (mCrypto.contains("(NEOS)")) {
+            setIcon(R.drawable.neoscoin_icon);
+            cryptoWebsite = "http://www.neoscoin.com/";
+        } else if (mCrypto.contains("(CFI)")) {
+            setIcon(R.drawable.cofoundit_icon);
+            cryptoWebsite = "https://cofound.it/";
+        } else if (mCrypto.contains("(EB3)")) {
+            setIcon(R.drawable.eb3coin_icon);
+            cryptoWebsite = "http://www.eb3coin.com/";
+        } else if (mCrypto.contains("(BCAP)")) {
+            setIcon(R.drawable.bcap_icon);
+            cryptoWebsite = "http://blockchain.capital/";
+        } else if (mCrypto.contains("(MUE)")) {
+            setIcon(R.drawable.monetaryunit_icon);
+            cryptoWebsite = "http://www.monetaryunit.org/";
+        } else if (mCrypto.contains("(ENRG)")) {
+            setIcon(R.drawable.energycoin_icon);
+            cryptoWebsite = "https://energycoin.eu/";
+        } else if (mCrypto.contains("(BCH)")) {
+            setIcon(R.drawable.bitcoincash_icon);
+            cryptoWebsite = "https://www.bitcoincash.org/";
+        } else if (mCrypto.contains("(TIME)")) {
+            setIcon(R.drawable.chronobank_icon);
+            cryptoWebsite = "https://chronobank.io/";
+        } else if (mCrypto.contains("(NXC)")) {
+            setIcon(R.drawable.nexium_icon);
+            cryptoWebsite = "https://beyond-the-void.net/";
+        } else if (mCrypto.contains("(PTOY)")) {
+            setIcon(R.drawable.patientory_icon);
+            cryptoWebsite = "https://patientory.com/";
+        } else if (mCrypto.contains("(WCT)")) {
+            setIcon(R.drawable.wavescommunitytoken_icon);
+            cryptoWebsite = "https://wavesplatform.com/";
+        } else if (mCrypto.contains("(IFC)")) {
+            setIcon(R.drawable.infinitecoin_icon);
+            cryptoWebsite = "http://www.infiniteco.in/";
+        } else if (mCrypto.contains("(PLU)")) {
+            setIcon(R.drawable.pluton_icon);
+            cryptoWebsite = "https://plutus.it/";
+        } else if (mCrypto.contains("(BASH)")) {
+            setIcon(R.drawable.luckchain_icon);
+            cryptoWebsite = "http://luckchain.org/";
+        } else if (mCrypto.contains("(BNB)")) {
+            setIcon(R.drawable.binancecoin_icon);
+            cryptoWebsite = "https://www.binance.com/";
+        } else if (mCrypto.contains("(NET)")) {
+            setIcon(R.drawable.nimiq_icon);
+            cryptoWebsite = "https://nimiq.com/";
+        } else if (mCrypto.contains("(BITCNY)")) {
+            setIcon(R.drawable.bitcny_icon);
+            cryptoWebsite = "noUrl";
+        }
+        else {
             mIconImageView.setImageDrawable(null);
         }
     }

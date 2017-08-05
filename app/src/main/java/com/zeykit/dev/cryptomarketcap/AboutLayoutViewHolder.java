@@ -39,8 +39,8 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
         rootView = ((Activity) context).getWindow().getDecorView().findViewById(R.id.aboutLayout);
         clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 
-        mIcon = (ImageView) view.findViewById(R.id.aboutIcon);
-        mText = (TextView) view.findViewById(R.id.aboutText);
+        mIcon = view.findViewById(R.id.aboutIcon);
+        mText = view.findViewById(R.id.aboutText);
 
         mText.setOnClickListener(this);
     }
@@ -59,13 +59,11 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
                 copyToClipboard(CRYPTO_ADDR.BTC);
                 String str0 = "BTC " + context.getString(R.string.copied_to_clipboard) + ". " + context.getString(R.string.thanks_for_support);
                 showSnackBar(rootView, str0, Snackbar.LENGTH_SHORT);
-                //openDonateBitcoin();
                 break;
             case 3:
                 copyToClipboard(CRYPTO_ADDR.ETH);
                 String str1 = "ETH " + context.getString(R.string.copied_to_clipboard) + ". " + context.getString(R.string.thanks_for_support);
                 showSnackBar(rootView, str1, Snackbar.LENGTH_SHORT);
-                //openDonateEth();
                 break;
             case 4:
                 copyToClipboard(CRYPTO_ADDR.ZEC);
@@ -82,6 +80,9 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
                 break;
             case 7:
                 reportBug();
+                break;
+            case 8:
+                openGitHub();
                 break;
             default:
                 break;
@@ -164,6 +165,17 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
             } catch (ActivityNotFoundException f) {
                 Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void openGitHub() {
+        Uri uri = Uri.parse("https://github.com/LaBaleineFr/CryptoMarketCap");
+        Intent openGitHub = new Intent(Intent.ACTION_VIEW, uri);
+
+        try {
+            context.startActivity(openGitHub);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
         }
     }
 
