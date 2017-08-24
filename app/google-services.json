@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "591671865571",
-    "firebase_url": "https://cryptomarketcap-e2d4f.firebaseio.com",
-    "project_id": "cryptomarketcap-e2d4f",
-    "storage_bucket": "cryptomarketcap-e2d4f.appspot.com"
+    "project_number": "302038965827",
+    "firebase_url": "https://api-6806198870613114063-477293.firebaseio.com",
+    "project_id": "api-6806198870613114063-477293",
+    "storage_bucket": "api-6806198870613114063-477293.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:591671865571:android:79309193f1ef7370",
+        "mobilesdk_app_id": "1:302038965827:android:79309193f1ef7370",
         "android_client_info": {
           "package_name": "com.zeykit.dev.cryptomarketcap"
         }
       },
       "oauth_client": [
         {
-          "client_id": "591671865571-j0055crk43qnjr7u75ldiev4re7p7d31.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.zeykit.dev.cryptomarketcap",
-            "certificate_hash": "bad1c70c01530c0ff8e5af294acfa51f36ae17a2"
-          }
-        },
-        {
-          "client_id": "591671865571-ptofohc2p68386qqm42tjlkeb241l2hh.apps.googleusercontent.com",
+          "client_id": "302038965827-0tid8tiankrt8lf9j4em8it47o5e8vv6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBuAr61t_24Dzv1mwRDOBA9X68VkZJPRSQ"
+          "current_key": "AIzaSyA5WXs8wd3cLiooojUPm2yxlXzvUs87x4Q"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "591671865571-ptofohc2p68386qqm42tjlkeb241l2hh.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

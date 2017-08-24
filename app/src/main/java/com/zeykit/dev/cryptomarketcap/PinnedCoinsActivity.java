@@ -1,20 +1,26 @@
 package com.zeykit.dev.cryptomarketcap;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,14 +80,6 @@ public class PinnedCoinsActivity extends AppCompatActivity {
         setupActionBar();
         setupRecyclerView();
 
-        /*tinyDB = new TinyDB(getApplicationContext());
-        if (tinyDB.getString("pinned_coins").isEmpty()) {
-            CryptoAdapter cryptoAdapter = new CryptoAdapter("", null, getString(R.string.no_pinned_coins), "", "");
-            cryptoAdapterList.add(cryptoAdapter);
-
-            adapter.notifyDataSetChanged();
-        }*/
-
         tinyDB = new TinyDB(getApplicationContext());
         pinnedCoins = tinyDB.getListString("pinned_coins");
         Collections.reverse(pinnedCoins);
@@ -126,6 +124,13 @@ public class PinnedCoinsActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.pinned_coins_menu, menu);
+        return true;
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         initialized = false;
@@ -150,8 +155,52 @@ public class PinnedCoinsActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_delete_all:
+                if (!cryptoAdapterList.get(0).getName().contains(getString(R.string.no_pinned_coins))) {
+                    showDeleteDialog();
+                } else {
+                    Snackbar.make(pinnedCoinsLayout, getString(R.string.pinned_coins_list_empty), Snackbar.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return onOptionsItemSelected(item);
+    }
+
+    private void showDeleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialog);
+        builder.setMessage(getString(R.string.remove_dialog_message))
+                .setTitle(getString(R.string.remove_dialog_title))
+                .setPositiveButton(getString(R.string.yes_dialog), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        removePinnedCoinsList();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no_dialog), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setCancelable(false);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void removePinnedCoinsList() {
+        pinnedCoins.clear();
+        cryptoAdapterList.clear();
+
+        tinyDB.putListString("pinned_coins", pinnedCoins);
+
+        CryptoAdapter cryptoAdapter = new CryptoAdapter("", null, getString(R.string.no_pinned_coins), "", "");
+        cryptoAdapterList.add(cryptoAdapter);
+
+        adapter.notifyDataSetChanged();
+
+        Snackbar.make(pinnedCoinsLayout, getString(R.string.pinned_coins_list_removed), Snackbar.LENGTH_SHORT).show();
     }
 
     private void setupRecyclerView() {
@@ -252,9 +301,9 @@ public class PinnedCoinsActivity extends AppCompatActivity {
                     if (!pinnedCoins.isEmpty()) {
                         for (int i = 0; i < pinnedCoins.size(); i++) {
 
-                            if (pinnedCoins.get(i).contains(" ")) {
-                                pinnedCoin = pinnedCoins.get(i).replace(" ", "-");
-                            } else if (pinnedCoins.get(i).contains("DubaiCoin")) {
+                            Log.d(_TAG, pinnedCoin);
+
+                            if (pinnedCoins.get(i).contains("DubaiCoin")) {
                                 pinnedCoin = "dubaicoin-dbix";
                             } else if (pinnedCoins.get(i).contains("Golem")) {
                                 pinnedCoin = "golem-network-tokens";
@@ -282,10 +331,20 @@ public class PinnedCoinsActivity extends AppCompatActivity {
                                 pinnedCoin = "santiment";
                             } else if (pinnedCoins.get(i).contains("Matchpool")) {
                                 pinnedCoin = "guppy";
+                            } else if (pinnedCoins.get(i).contains("DAO.Casino")) {
+                                pinnedCoin = "dao-casino";
+                            } else if (pinnedCoins.get(i).contains("HEAT")) {
+                                pinnedCoin = "heat-ledger";
+                            }
+                            else if (pinnedCoins.get(i).contains(" ")) {
+                                Log.d(_TAG, pinnedCoins.get(i));
+                                pinnedCoin = pinnedCoins.get(i).replace(" ", "-");
                             }
                             else {
                                 pinnedCoin = pinnedCoins.get(i);
                             }
+
+                            Log.d(_TAG, pinnedCoin);
 
                             URL url = new URL(apiAddress + pinnedCoin + "/?convert=" + defaultCurrency);
                             connection = (HttpURLConnection) url.openConnection();

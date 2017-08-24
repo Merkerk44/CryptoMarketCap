@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">2.5.6</string>
-    <string name="splash_screen_ver">Zeykit-Dev - v2.5.6</string>
+    <string name="change_log_title">Change-log</string>
+    <string name="change_log_content">\nWelcome to Crypto Market Cap !\n\nCrypto Market Cap updated to v3.1.0 here\'s changes:\n\n• More visible data\n• High and low price in charts can now being converted in USD/EUR/GBP\n• New \"Always on screen\" function\n• Added \"Remove pinned coins list\" function\n• Better UI for charts\n• Added new icons and website for crypto-currencies\n• Additional bug fixes and performance improvements\n\nNote : for better user experience, make sure to read the \"How to use\" available at the app page\n\nThis app is fully free allowing to you to get the best from this app. If you like my job you can donating to my BTC/ETH or ZEC addresses available in \"About\" panel.\n\nPlease don\'t hesitate to contact zeykit.dev@gmail.com for any issues with the app (function available in the \"About\" panel).\n</string>
+    <string name="app_version">3.1.0</string>
+    <string name="splash_screen_ver">Zeykit-Dev - v3.1.0</string>
     <string name="action_search">Search</string>
     <string name="action_about">About</string>
     <string name="action_settings">Settings</string>
@@ -19,7 +21,7 @@
     <string name="got_it">GOT IT</string>
     <string name="developed_by_zeykit_dev">Developed by Zeykit-Dev</string>
     <string name="market_data_from">Market cap data are from CoinMarketCap.com</string>
-    <string name="join_community">Join LaBaleine : french cryptocurrencies community</string>
+    <string name="join_community">Join LaBaleine : french crypto-currencies community</string>
     <string name="donate_to_developer">Donate to developer (thanks you !)</string>
     <string name="btc_address">BTC : 1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
     <string name="btc">1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
@@ -37,8 +39,8 @@
     <string name="currency_list_title">Default currency</string>
     <string name="currency_list_summary">Choose the currency you want to be displayed</string>
     <string name="pinned_coins">Pinned coins</string>
-    <string name="array_size">Cryptocurrencies array\'s size to display</string>
-    <string name="array_size_summary">Define the number of cryptocurriencies that will be displayed</string>
+    <string name="array_size">Crypto-currencies array\'s size to display</string>
+    <string name="array_size_summary">Define the number of crypto-currencies that will be displayed</string>
     <string name="price">Price</string>
     <string name="volume">24H Volume</string>
     <string name="market_cap">Market Cap</string>
@@ -72,6 +74,24 @@
     <string name="something_goes_wrong">Something goes wrong, try to refresh and check your Internet connection.</string>
     <string name="no_website">No website currently available.</string>
     <string name="github">Crypto Market Cap is an open-source app available on GitHub</string>
+    <string name="launching_preference">Launching preferences</string>
+    <string name="chart_history_title">Chart History</string>
+    <string name="chart_history_summary">Define the start point to create the chart</string>
+    <string name="min_price">Min :</string>
+    <string name="max_price">Max :</string>
+    <string name="price_at_point">Price at touched point :</string>
+    <string name="no_chart">No chart history for this currency. You maybe can try to change the chart history\'s start point in the settings panel then retry.</string>
+    <string name="coinmarketcap_error">CoinMarketCap returning an error.</string>
+    <string name="always_on_title">Always on screen</string>
+    <string name="always_on_summary">Define if you want to always keep your phone screen turned on during app running</string>
+    <string name="billion">B</string>
+    <string name="remove_all">Remove all</string>
+    <string name="remove_dialog_title">Remove pinned coins list</string>
+    <string name="remove_dialog_message">Are you sure you want to remove the pinned coins list ?</string>
+    <string name="yes_dialog">YES</string>
+    <string name="no_dialog">NO</string>
+    <string name="pinned_coins_list_removed">Pinned coins list has been list removed.</string>
+    <string name="pinned_coins_list_empty">Pinned coins list is empty.</string>
     
     <string-array name="currencies_list">
         <item>USD</item>
@@ -83,5 +103,14 @@
     <string-array name="activities_list">
         <item>Main activity</item>
         <item>Pinned coins</item>
+    </string-array>
+
+    <string-array name="chart_history_list">
+        <item>1 day</item>
+        <item>7 days</item>
+        <item>30 days</item>
+        <item>180 days</item>
+        <item>365 days</item>
+        <item>All data</item>
     </string-array>
 </resources>

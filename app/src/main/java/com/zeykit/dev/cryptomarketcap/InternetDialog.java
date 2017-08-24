@@ -20,7 +20,7 @@ public class InternetDialog extends DialogFragment {
         final View dialogView = inflater.inflate(R.layout.request_internet_layout, null);
         builder.setView(dialogView);
 
-        Button gotItButton = (Button) dialogView.findViewById(R.id.internetGotItButton);
+        Button gotItButton = dialogView.findViewById(R.id.internetGotItButton);
         gotItButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

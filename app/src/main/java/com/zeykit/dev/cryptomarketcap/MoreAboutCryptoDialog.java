@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -18,6 +19,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
+import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,20 +37,32 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import dmax.dialog.SpotsDialog;
 
 public class MoreAboutCryptoDialog extends Activity {
 
+    private final String mTAG = MoreAboutCryptoDialog.class.getName();
+
     static LinearLayout moreAboutCryptoActivity;
     RecyclerView recyclerView;
+    GraphView graphView;
     private List<AboutCryptoAdapter> cryptoAdapterList;
     private AboutCryptoRvAdapter adapter;
 
+    private SpotsDialog progressDialog;
+
     static String selectedCrypto = "";
     private String[] cryptoName = selectedCrypto.split("\n");
+    private String[] cryptoSymbol1 = cryptoName[1].split(Pattern.quote("("));
+    private String[] cryptoSymbol2 = cryptoSymbol1[1].split(Pattern.quote(")"));
+
+    String convertEur = "0.86";
+    String convertGbp = "0.78";
 
     private SharedPreferences sharedPreferences;
 
@@ -49,6 +70,7 @@ public class MoreAboutCryptoDialog extends Activity {
         String NAME = "name";
         String SYMBOL = "symbol";
         String RANK = "rank";
+        String PRICE = "price";
         String PRICE_USD = "price_usd";
         String PRICE_EUR = "price_eur";
         String PRICE_GBP = "price_gbp";
@@ -65,6 +87,9 @@ public class MoreAboutCryptoDialog extends Activity {
         String PERCENT_CHANGE_1H = "percent_change_1h";
         String PERCENT_CHANGE_24H = "percent_change_24h";
         String PERCENT_CHANGE_7D = "percent_change_7d";
+        String USD = "USD";
+        String EUR = "EUR";
+        String GBP = "GBP";
     }
 
     @Override
@@ -108,6 +133,10 @@ public class MoreAboutCryptoDialog extends Activity {
             cryptoName[0] = "guppy";
         if (cryptoName[0].contains("MUSE"))
             cryptoName[0] = "bitshares-music";
+        if (cryptoName[0].contains("DAO.Casino"))
+            cryptoName[0] = "dao-casino";
+        if (cryptoName[0].contains("HEAT"))
+            cryptoName[0] = "heat-ledger";
 
         init();
         setupRecyclerView();
@@ -139,11 +168,11 @@ public class MoreAboutCryptoDialog extends Activity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if (haveNetworkConnectionV2(getApplicationContext()))
+        if (haveNetworkConnectionV2(getApplicationContext())) {
             new JSONParse().execute();
-        else
+        } else {
             finish();
-
+        }
     }
 
     @Override
@@ -152,8 +181,15 @@ public class MoreAboutCryptoDialog extends Activity {
     }
 
     private void init() {
-        moreAboutCryptoActivity = (LinearLayout) findViewById(R.id.moreAboutCryptoActivity);
-        recyclerView = (RecyclerView) findViewById(R.id.cryptoAboutRecyclerView);
+        moreAboutCryptoActivity = findViewById(R.id.moreAboutCryptoActivity);
+        recyclerView = findViewById(R.id.cryptoAboutRecyclerView);
+        graphView = findViewById(R.id.graph);
+
+        graphView.getGridLabelRenderer().setTextSize(35);
+
+        graphView.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
+
+        graphView.setTitleColor(getResources().getColor(R.color.colorTitle));
     }
 
     private void setupRecyclerView() {
@@ -169,8 +205,6 @@ public class MoreAboutCryptoDialog extends Activity {
     private class JSONParse extends AsyncTask<String, String, String> {
 
         boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
-
-        private SpotsDialog progressDialog;
 
         private AboutCryptoAdapter cryptoAdapter = new AboutCryptoAdapter();
         private JSONObject jObj;
@@ -247,7 +281,7 @@ public class MoreAboutCryptoDialog extends Activity {
         @Override
         protected void onPostExecute(String result) {
             if (errorFound) {
-                Toast.makeText(getApplicationContext(), "CoinMarketCap returning an error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.coinmarketcap_error), Toast.LENGTH_SHORT).show();
             } else {
                 if (connectionEnabled) {
                     try {
@@ -260,30 +294,41 @@ public class MoreAboutCryptoDialog extends Activity {
                             name = jObj.getString(TAG.NAME);
                             symbol = "(" + jObj.getString(TAG.SYMBOL) + ")";
 
+                            DecimalFormat formatter = new DecimalFormat("#,###");
+
                             switch (defaultCurrency) {
                                 case "USD":
                                     price = getString(R.string.price) + " : $" + jObj.getString(TAG.PRICE_USD);
-                                    marketCap = getString(R.string.market_cap) + " : $" + jObj.getString(TAG.MARKET_CAP_USD);
-                                    volume = getString(R.string.volume) + " : $" + jObj.getString(TAG.VOLUME_USD);
+                                    Double dUsdMarketCap = Double.parseDouble(jObj.getString(TAG.MARKET_CAP_USD));
+                                    marketCap = getString(R.string.market_cap) + " : $" + formatter.format(dUsdMarketCap);
+                                    Double dUsdVolume = Double.parseDouble(jObj.getString(TAG.VOLUME_USD));
+                                    volume = getString(R.string.volume) + " : $" + formatter.format(dUsdVolume);
                                     break;
                                 case "EUR":
                                     price = getString(R.string.price) + " : €" + jObj.getString(TAG.PRICE_EUR);
-                                    marketCap = getString(R.string.market_cap) + " : €" + jObj.getString(TAG.MARKET_CAP_EUR);
-                                    volume = getString(R.string.volume) + " : €" + jObj.getString(TAG.VOLUME_EUR);
+                                    Double dEurMarketCap = Double.parseDouble(jObj.getString(TAG.MARKET_CAP_EUR));
+                                    marketCap = getString(R.string.market_cap) + " : €" + formatter.format(dEurMarketCap);
+                                    Double dEurVolume = Double.parseDouble(jObj.getString(TAG.VOLUME_EUR));
+                                    volume = getString(R.string.volume) + " : €" + formatter.format(dEurVolume);
                                     break;
                                 case "GBP":
                                     price = getString(R.string.price) + " : £" + jObj.getString(TAG.PRICE_GBP);
-                                    marketCap = getString(R.string.market_cap) + " : £" + jObj.getString(TAG.MARKET_CAP_GBP);
-                                    volume = getString(R.string.volume) + " : £" + jObj.getString(TAG.VOLUME_GBP);
+                                    Double dGbpMarketCap = Double.parseDouble(jObj.getString(TAG.MARKET_CAP_GBP));
+                                    marketCap = getString(R.string.market_cap) + " : £" + formatter.format(dGbpMarketCap);
+                                    Double dGbpVolume = Double.parseDouble(jObj.getString(TAG.VOLUME_GBP));
+                                    volume = getString(R.string.volume) + " : £" + formatter.format(dGbpVolume);
                                     break;
                                 case "BTC":
                                     price = getString(R.string.price) + " : ฿" + jObj.getString(TAG.PRICE_BTC);
-                                    marketCap = getString(R.string.market_cap) + " : ฿" + jObj.getString(TAG.MARKET_CAP_BTC);
-                                    volume = getString(R.string.volume) + " : ฿" + jObj.getString(TAG.VOLUME_BTC);
+                                    Double dBtcMarketCap = Double.parseDouble(jObj.getString(TAG.MARKET_CAP_BTC));
+                                    marketCap = getString(R.string.market_cap) + " : ฿" + formatter.format(dBtcMarketCap);
+                                    Double dBtcVolume = Double.parseDouble(jObj.getString(TAG.VOLUME_BTC));
+                                    volume = getString(R.string.volume) + " : ฿" + formatter.format(dBtcVolume);
                                     break;
                             }
 
-                            circulatingSupply = getString(R.string.circulating_supply) + " : $" + jObj.getString(TAG.CIRCULATING_SUPPLY);
+                            Double dCirculatingSupply = Double.parseDouble(jObj.getString(TAG.CIRCULATING_SUPPLY));
+                            circulatingSupply = getString(R.string.circulating_supply) + " : " + formatter.format(dCirculatingSupply);
                             percentChange1h = getString(R.string.percent_change_1h) + " : " + jObj.getString(TAG.PERCENT_CHANGE_1H) + "%";
                             percentChange24h = getString(R.string.percent_change_24h) + " : " + jObj.getString(TAG.PERCENT_CHANGE_24H) + "%";
                             percentChange7d = getString(R.string.percent_change_7d) + " : " + jObj.getString(TAG.PERCENT_CHANGE_7D) + "%";
@@ -295,11 +340,185 @@ public class MoreAboutCryptoDialog extends Activity {
 
                             adapter.notifyItemInserted(i);
                             adapter.notifyDataSetChanged();
+
+                            new JSONPrice().execute();
                         }
                     } catch (JSONException | NullPointerException e) {
                         e.printStackTrace();
                     }
                 }
+            }
+        }
+    }
+
+    private String getSelectedCrypto(String selectedCrypto) {
+        String crypto = selectedCrypto;
+        if (!crypto.equals("") && crypto.length() > 1) {
+            String[] cryptoName = crypto.split(Pattern.quote("\n"));
+            if (cryptoName[1] != null) {
+                String[] cryptoSplit = cryptoName[1].split(Pattern.quote("("));
+                String[] cryptoSplit2 = cryptoSplit[1].split(Pattern.quote(")"));
+
+                return cryptoSplit2[0];
+            }
+        }
+
+        return null;
+    }
+
+    private class JSONGraph extends AsyncTask<String, String, String> {
+
+        private final String chartAddress = "http://www.coincap.io/" + getChartHistoryLength(getChartHistoryPreference()) + getSelectedCrypto(selectedCrypto);
+        private ArrayList<String> array = new ArrayList<>();
+        StringBuffer buffer;
+
+        protected String doInBackground(String... params) {
+
+            HttpURLConnection connection;
+            BufferedReader reader;
+
+            try {
+                if (!chartAddress.contains("null")) {
+                    URL url = new URL(chartAddress);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+
+                    InputStream stream = connection.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    buffer = new StringBuffer();
+                    String line = "";
+
+                    while ((line = reader.readLine()) != null) {
+                        String append = line + "\n";
+                        buffer.append(append);
+                    }
+
+                    connection.disconnect();
+                    reader.close();
+                    stream.close();
+
+                    return buffer.toString();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            Log.d(mTAG, result.length() + "");
+            if (!result.contains("null") && result.length() > 41) {
+                try {
+                    JSONObject jObj = new JSONObject(result);
+                    JSONArray priceArray = jObj.getJSONArray(TAG.PRICE);
+
+                    DataPoint[] values = new DataPoint[priceArray.length()];
+
+                    for (int i = 0; i < priceArray.length(); i++) {
+                        String value = priceArray.getString(i);
+                        String[] split1 = value.split(",");
+                        String[] split2 = split1[1].split("]");
+
+                        array.add(split2[0]);
+
+                        DataPoint v = new DataPoint(i, Double.parseDouble(split2[0]));
+                        values[i] = v;
+                    }
+
+                    float minValue = getMinValue(array);
+                    float maxValue = getMaxValue(array);
+
+                    LineGraphSeries<DataPoint> series = new LineGraphSeries<>(values);
+
+                    series.setOnDataPointTapListener(new OnDataPointTapListener() {
+                        @Override
+                        public void onTap(Series series, DataPointInterface dataPoint) {
+
+                            String data = dataPoint.toString();
+                            String[] splitData1 = data.split(Pattern.quote("/"));
+                            String[] splitData2 = splitData1[1].split(Pattern.quote("]"));
+                            String priceAtThisPoint = "";
+
+                            switch (getDefaultCurrency()) {
+                                case "USD":
+                                    priceAtThisPoint = getString(R.string.price_at_point) + " $" + splitData2[0];
+                                    break;
+                                case "EUR":
+                                    priceAtThisPoint = getString(R.string.price_at_point) + " $" + splitData2[0] + " (€" + String.valueOf(convertUsdToEur(splitData2[0], convertEur)).substring(0, 7) + ")";
+                                    break;
+                                case "GBP":
+                                    priceAtThisPoint = getString(R.string.price_at_point) + " $" + splitData2[0] + " (£" + String.valueOf(convertUsdToGbp(splitData2[0], convertGbp)).substring(0, 7) + ")";
+                                    break;
+                                case "BTC":
+                                    priceAtThisPoint = getString(R.string.price_at_point) + " $" + splitData2[0];
+                                    break;
+                                default:
+                                    priceAtThisPoint = getString(R.string.price_at_point) + " $" + splitData2[0];
+                                    break;
+                            }
+
+                            Toast.makeText(getApplicationContext(), priceAtThisPoint, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    series.setDrawBackground(true);
+                    series.setColor(Color.parseColor("#007acc"));
+                    series.setBackgroundColor(Color.argb(30, 0, 138, 230));
+
+                    graphView.getViewport().setYAxisBoundsManual(true);
+                    graphView.getViewport().setMinY(minValue);
+                    graphView.getViewport().setMaxY(maxValue);
+
+                    graphView.getViewport().setXAxisBoundsManual(true);
+                    graphView.getViewport().setMinX(0);
+                    graphView.getViewport().setMaxX(array.size());
+
+                    graphView.getViewport().setScalable(true);
+                    graphView.getViewport().setScrollable(true);
+                    graphView.getViewport().setScrollableY(true);
+                    graphView.getViewport().setScalableY(true);
+
+                    graphView.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+                    graphView.getGridLabelRenderer().setVerticalLabelsVisible(true);
+
+                    String legend = "";
+
+                    switch (getDefaultCurrency()) {
+                        case "USD":
+                            legend = getString(R.string.min_price) + " $" + String.valueOf(minValue).substring(0, 6) + ", " + getString(R.string.max_price) + " $" + String.valueOf(maxValue).substring(0, 6) + " (" + getChartHistoryPreference() + ")";
+                            break;
+                        case "EUR":
+                            legend = getString(R.string.min_price) + " €" + String.valueOf(convertUsdToEur(minValue, convertEur)).substring(0, 7) + ", " + getString(R.string.max_price) + " €" + String.valueOf(convertUsdToEur(maxValue, convertEur)).substring(0, 7) + " (" + getChartHistoryPreference() + ")";
+                            break;
+                        case "GBP":
+                            legend = getString(R.string.min_price) + " £" + String.valueOf(convertUsdToGbp(minValue, convertGbp)).substring(0, 7) + ", " + getString(R.string.max_price) + " £" + String.valueOf(convertUsdToGbp(maxValue, convertGbp)).substring(0, 7) + " (" + getChartHistoryPreference() + ")";
+                            break;
+                        case "BTC":
+                            legend = getString(R.string.min_price) + " $" + String.valueOf(minValue).substring(0, 6) + ", " + getString(R.string.max_price) + " $" + String.valueOf(maxValue).substring(0, 6) + " (" + getChartHistoryPreference() + ")";
+                            break;
+                        default:
+                            legend = getString(R.string.min_price) + " $" + String.valueOf(minValue).substring(0, 6) + ", " + getString(R.string.max_price) + " $" + String.valueOf(maxValue).substring(0, 6) + " (" + getChartHistoryPreference() + ")";
+                            break;
+                    }
+
+                    graphView.setTitle(legend);
+
+                    graphView.addSeries(series);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                LineGraphSeries<DataPoint> nullSeries = new LineGraphSeries<>(new DataPoint[] {
+                        new DataPoint(0, 0)
+                });
+
+                graphView.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+                graphView.getGridLabelRenderer().setVerticalLabelsVisible(false);
+                graphView.addSeries(nullSeries);
+                Toast.makeText(getApplicationContext(), getString(R.string.no_chart), Toast.LENGTH_LONG).show();
             }
 
             if (progressDialog != null)
@@ -307,8 +526,148 @@ public class MoreAboutCryptoDialog extends Activity {
         }
     }
 
+    private class JSONPrice extends AsyncTask<String, String, String> {
+
+        private final String urlAddress = "http://api.fixer.io/latest?base=USD";
+        StringBuffer buffer;
+
+        protected String doInBackground(String... params) {
+
+            HttpURLConnection connection;
+            BufferedReader reader;
+
+            try {
+                URL url = new URL(urlAddress);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                buffer = new StringBuffer();
+                String line = "";
+
+                while ((line = reader.readLine()) != null) {
+                    String append = line + "\n";
+                    buffer.append(append);
+                }
+
+                connection.disconnect();
+                reader.close();
+                stream.close();
+
+                return buffer.toString();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                try {
+                    JSONObject jObj = new JSONObject(result);
+                    JSONObject rates = jObj.getJSONObject("rates");
+
+                    convertEur = rates.getString(TAG.EUR);
+                    convertGbp = rates.getString(TAG.GBP);
+
+                    Log.d(mTAG, "Object: " + jObj.toString() + "\nRates: " + rates.toString() + "\nEur: " + convertEur + "\nGbp: " + convertGbp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            new JSONGraph().execute();
+        }
+    }
+
+    private float convertUsdToEur(float usdValue) {
+        return usdValue * 0.85f;
+    }
+
+    private float convertUsdToEur(String usdValue) {
+        return Float.parseFloat(usdValue) * 0.85f;
+    }
+
+    private float convertUsdToEur(float usdValue, float exchangeRate) {
+        return usdValue * exchangeRate;
+    }
+
+    private float convertUsdToEur(String usdValue, float exchangeRate) {
+        return Float.parseFloat(usdValue) * exchangeRate;
+    }
+
+    private float convertUsdToEur(float usdValue, String exchangeRate) {
+        return usdValue * Float.valueOf(exchangeRate);
+    }
+
+    private float convertUsdToEur(String usdValue, String exchangeRate) {
+        return Float.valueOf(usdValue) * Float.valueOf(exchangeRate);
+    }
+
+    private float convertUsdToGbp(float usdValue) {
+        return usdValue * 0.775f;
+    }
+
+    private float convertUsdToGbp(String usdValue) {
+        return Float.parseFloat(usdValue) * 0.775f;
+    }
+
+    private float convertUsdToGbp(float usdValue, float exchangeRate) {
+        return usdValue * exchangeRate;
+    }
+
+    private float convertUsdToGbp(float usdValue, String exchangeRate) {
+        return usdValue * Float.valueOf(exchangeRate);
+    }
+
+    private float convertUsdToGbp(String usdValue, float exchangeRate) {
+        return Float.valueOf(usdValue) * exchangeRate;
+    }
+
+    private float convertUsdToGbp(String usdValue, String exchangeRate) {
+        return Float.valueOf(usdValue) * Float.valueOf(exchangeRate);
+    }
+
     private String getDefaultCurrency() {
         return sharedPreferences.getString("currency_list_preference", "USD");
+    }
+
+    private String getChartHistoryPreference() {
+        return sharedPreferences.getString("chart_history_preference", "7 days");
+    }
+
+    private String getChartHistoryLength(String preference) {
+        switch (preference) {
+            case "1 day":
+                return "history/1day/";
+            case "1 jour":
+                return "history/1day/";
+            case "7 day":
+                return "history/7day/";
+            case "7 jours":
+                return "history/7day/";
+            case "30 days":
+                return "history/30day/";
+            case "30 jours":
+                return "history/30day/";
+            case "180 days":
+                return "history/180day/";
+            case "180 jours":
+                return "history/180day/";
+            case "365 days":
+                return "history/365day/";
+            case "365 jours":
+                return "history/365day/";
+            case "All data":
+                return "history/";
+            case "Toute les données":
+                return "history/";
+            default:
+                return "history/7day/";
+        }
     }
 
     private boolean haveNetworkConnectionV2(Context context) {
@@ -332,5 +691,37 @@ public class MoreAboutCryptoDialog extends Activity {
             return true;
         }
         return false;
+    }
+
+    private float getMaxValue(ArrayList<String> arrayList) {
+        float[] floatArray = new float[arrayList.size()];
+        for (int i = 0; i < arrayList.size(); i++) {
+            floatArray[i] = Float.parseFloat(arrayList.get(i));
+        }
+
+        float max = 0;
+        for (int i = 0; i < floatArray.length; i++) {
+            if (floatArray[i] > max) {
+                max = floatArray[i];
+            }
+        }
+
+        return max;
+    }
+
+    private float getMinValue(ArrayList<String> arrayList) {
+        float[] floatArray = new float[arrayList.size()];
+        for (int i = 0; i < arrayList.size(); i++) {
+            floatArray[i] = Float.parseFloat(arrayList.get(i));
+        }
+
+        float min = floatArray[0];
+        for (int i = 0; i < floatArray.length; i++) {
+            if (floatArray[i] < min) {
+                min = floatArray[i];
+            }
+        }
+
+        return min;
     }
 }

@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
-    <string name="app_version">2.5.6</string>
-    <string name="splash_screen_ver">Zeykit-Dev - v2.5.6</string>
+    <string name="change_log_title">Change-log</string>
+    <string name="change_log_content">\nBienvenue dans Crypto Market Cap !\n\nCrypto Market Cap a été mis à jour en v3.1.0, voici les changements:\n\n• Données plus lisibles\n• Les prix haut et bas du graphique peuvent maintenant être convertis en USD/EUR/GBP\n• Nouvelle fonction \"Laisser l\'écran allumé\"\n• Ajout de la fonction \"Supprimer la liste des monnaies épinglées\"\n• Meilleure interface pour les graphiques\n• Ajout de nouvelles icônes et sites de crypto-monnaies\n• Correction de bugs supplémentaires et améliorations de performance\n\nNote : pour une meilleure expérience utilisateur, assurez-vous d\'avoir lu la section \"Comment l\'utiliser\" disponible sur la page de l\'application\n\nCette application est entièrement gratuite, ce qui vous permet d\'obtenir le meilleur de cette application. Si vous aimez mon travail, vous pouvez faire un don à mes adresses BTC/ETH ou ZEC disponibles dans la partie \"À propos\".\n\nEn cas de problème avec l\'application, n\'hésitez pas à me contacter à zeykit.dev@gmail.com (fonction disponnible dans la partie \"À Propos\").</string>
+    <string name="app_version">3.1.0</string>
+    <string name="splash_screen_ver">Zeykit-Dev - v3.1.0</string>
     <string name="action_search">Rechercher</string>
     <string name="action_about">À Propos</string>
     <string name="action_settings">Paramètres</string>
@@ -71,7 +73,25 @@
     <string name="share_content">Télécharge Crypto Market Cap ici</string>
     <string name="something_goes_wrong">Quelque chose ne va pas, essayez de rafraîchir et vérifiez votre connexion Internet.</string>
     <string name="no_website">Aucun site disponible actuellement.</string>
-    <string name="github">Crypto Market Cap est une application open-source disponnible sur GitHub</string>
+    <string name="github">Crypto Market Cap est une application open-source disponible sur GitHub</string>
+    <string name="launching_preference">Préférences de lancement</string>
+    <string name="chart_history_title">Historique du graphique</string>
+    <string name="chart_history_summary">Défininissez le point de départ pour créer le graphique</string>
+    <string name="min_price">Min :</string>
+    <string name="max_price">Max :</string>
+    <string name="price_at_point">Prix au point touché :</string>
+    <string name="no_chart">Pas d\'historique de graphique pour cette devise. Vous pouvez peut-être essayer de modifier le point de départ de l\'historique du graphique dans le panneau des paramètres, puis réessayer.</string>
+    <string name="coinmarketcap_error">CoinMarketCap a renvoyer une erreur.</string>
+    <string name="always_on_title">Garder l\'écran allumé</string>
+    <string name="always_on_summary">Définissez si vous souhaitez laisser l\'écran de votre téléphone allumé durant l\'utilisation de l\'application</string>
+    <string name="billion">Md</string>
+    <string name="remove_all">Tout supprimer</string>
+    <string name="remove_dialog_title">Supprimer la liste des monnaies épinglées</string>
+    <string name="remove_dialog_message">Êtes-vous sûr de vouloir supprimer la liste des monnaies épinglées ?</string>
+    <string name="yes_dialog">OUI</string>
+    <string name="no_dialog">NON</string>
+    <string name="pinned_coins_list_removed">La liste des monnaies épinglées a été supprimée.</string>
+    <string name="pinned_coins_list_empty">La liste des monnaies épinglées est vide.</string>
 
     <string-array name="currencies_list">
         <item>USD</item>
@@ -83,5 +103,14 @@
     <string-array name="activities_list">
         <item>Activité principale</item>
         <item>Monnaies épinglées</item>
+    </string-array>
+
+    <string-array name="chart_history_list">
+        <item>1 jour</item>
+        <item>7 jours</item>
+        <item>30 jours</item>
+        <item>180 jours</item>
+        <item>365 jours</item>
+        <item>Toute les données</item>
     </string-array>
 </resources>

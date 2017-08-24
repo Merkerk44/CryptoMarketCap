@@ -21,6 +21,14 @@
             android:title="@string/currency_list_title"
             android:summary="@string/currency_list_summary"/>
 
+        <ListPreference
+            android:defaultValue="7 days"
+            android:entries="@array/chart_history_list"
+            android:entryValues="@array/chart_history_list"
+            android:key="chart_history_preference"
+            android:title="@string/chart_history_title"
+            android:summary="@string/chart_history_summary"/>
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="no_panic_switch"
@@ -29,7 +37,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Launching preferences">
+        android:title="@string/launching_preference">
 
         <ListPreference
             android:defaultValue="Main Activity"
@@ -39,6 +47,12 @@
             android:title="@string/activity_to_launch"
             android:summary="@string/activity_to_launch_summary">
         </ListPreference>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="always_on_screen"
+            android:title="@string/always_on_title"
+            android:summary="@string/always_on_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory

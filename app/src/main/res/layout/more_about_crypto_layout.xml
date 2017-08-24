@@ -10,13 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="200dip"
+        android:layout_margin="5dp"
+        android:id="@+id/graph"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="0dp"
-        android:paddingBottom="6dp"
-        android:paddingEnd="6dp"
-        android:paddingStart="0dp"
         android:gravity="end">
 
         <Button android:theme="@style/Base.Widget.AppCompat.Button.Borderless"
@@ -27,6 +29,7 @@
             android:textColor="@color/colorSummary"
             android:clickable="true"
             android:focusable="true"
+            android:layout_margin="5dp"
             android:textStyle="bold"
             android:text="@string/got_it"/>
     </LinearLayout>

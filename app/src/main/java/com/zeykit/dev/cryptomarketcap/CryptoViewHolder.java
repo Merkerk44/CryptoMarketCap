@@ -44,7 +44,7 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
                     MainActivity.currentView = "PinnedCoinsActivity";
                 }
 
-                if (!MoreAboutCryptoDialog.selectedCrypto.contains("No pinned coins")) {
+                if (!MoreAboutCryptoDialog.selectedCrypto.contains(context.getString(R.string.no_pinned_coins))) {
                     Intent intent = new Intent(v.getContext(),
                             MoreAboutCryptoDialog.class);
                     v.getContext().startActivity(intent);
@@ -418,6 +418,108 @@ public class CryptoViewHolder extends RecyclerView.ViewHolder {
             setIcon(R.drawable.nimiq_icon);
         } else if (mCrypto.contains("(BITCNY)")) {
             setIcon(R.drawable.bitcny_icon);
+        } else if (mCrypto.contains("(NEO)")) {
+            setIcon(R.drawable.neo_icon);
+        } else if (mCrypto.contains("(ZRX)")) {
+            setIcon(R.drawable.ox_icon);
+        } else if (mCrypto.contains("(BTM)")) {
+            setIcon(R.drawable.bytom_icon);
+        } else if (mCrypto.contains("(MCO)")) {
+            setIcon(R.drawable.monaco_icon);
+        } else if (mCrypto.contains("(DNT)")) {
+            setIcon(R.drawable.district0x_icon);
+        } else if (mCrypto.contains("(ICO)")) {
+            setIcon(R.drawable.ico_icon);
+        } else if (mCrypto.contains("(GAS)")) {
+            setIcon(R.drawable.gas_icon);
+        } else if (mCrypto.contains("(BQX)")) {
+            setIcon(R.drawable.bitquence_icon);
+        } else if (mCrypto.contains("(STX)")) {
+            setIcon(R.drawable.stox_icon);
+        } else if (mCrypto.contains("(NLC2)")) {
+            setIcon(R.drawable.nolimitcoin_icon);
+        } else if (mCrypto.contains("(OAX)")) {
+            setIcon(R.drawable.openanx_icon);
+        } else if (mCrypto.contains("(TCC)")) {
+            setIcon(R.drawable.thechampcoin_icon);
+        } else if (mCrypto.contains("(LUN)")) {
+            setIcon(R.drawable.lunyr_icon);
+        } else if (mCrypto.contains("(MSP)")) {
+            setIcon(R.drawable.mothership_icon);
+        } else if (mCrypto.contains("(IXT)")) {
+            setIcon(R.drawable.insurex_icon);
+        } else if (mCrypto.contains("(GUP)")) {
+            setIcon(R.drawable.matchpool_icon);
+        } else if (mCrypto.contains("(CLAM)")) {
+            setIcon(R.drawable.clams_icon);
+        } else if (mCrypto.contains("(TIX)")) {
+            setIcon(R.drawable.blocktix_icon);
+        } else if (mCrypto.contains("(XBY)")) {
+            setIcon(R.drawable.xtrabytes_icon);
+        } else if (mCrypto.contains("(ECN)")) {
+            setIcon(R.drawable.ecoin_icon);
+        } else if (mCrypto.contains("(ZEN)")) {
+            setIcon(R.drawable.zencash_icon);
+        } else if (mCrypto.contains("(AEON)")) {
+            setIcon(R.drawable.aeon_icon);
+        } else if (mCrypto.contains("(UNO)")) {
+            setIcon(R.drawable.unobtanium_icon);
+        } else if (mCrypto.contains("(XRB)")) {
+            setIcon(R.drawable.raiblocks_icon);
+        } else if (mCrypto.contains("(DENT)")) {
+            setIcon(R.drawable.dent_icon);
+        } else if (mCrypto.contains("(SPR)")) {
+            setIcon(R.drawable.spreadcoin_icon);
+        } else if (mCrypto.contains("(RBY)")) {
+            setIcon(R.drawable.rubycoin_icon);
+        } else if (mCrypto.contains("(BET)")) {
+            setIcon(R.drawable.daocasino_icon);
+        } else if (mCrypto.contains("(SHIFT)")) {
+            setIcon(R.drawable.shift_icon);
+        } else if (mCrypto.contains("(LMC)")) {
+            setIcon(R.drawable.lomocoin_icon);
+        } else if (mCrypto.contains("(DMD)")) {
+            setIcon(R.drawable.diamond_icon);
+        } else if (mCrypto.contains("(MBRS)")) {
+            setIcon(R.drawable.embers_icon);
+        } else if (mCrypto.contains("(INCNT)")) {
+            setIcon(R.drawable.incent_icon);
+        } else if (mCrypto.contains("(FTC)")) {
+            setIcon(R.drawable.feathercoin_icon);
+        } else if (mCrypto.contains("(TOA)")) {
+            setIcon(R.drawable.toacoin_icon);
+        } else if (mCrypto.contains("(GAM)")) {
+            setIcon(R.drawable.gambit_icon);
+        } else if (mCrypto.contains("(RISE)")) {
+            setIcon(R.drawable.rise_icon);
+        } else if (mCrypto.contains("(SPHR)")) {
+            setIcon(R.drawable.sphere_icon);
+        } else if (mCrypto.contains("(CRB)")) {
+            setIcon(R.drawable.creditbit_icon);
+        } else if (mCrypto.contains("(BCY)")) {
+            setIcon(R.drawable.bitcrystals_icon);
+        } else if (mCrypto.contains("(APX)")) {
+            setIcon(R.drawable.apx_icon);
+        } else if (mCrypto.contains("(EMC2)")) {
+            setIcon(R.drawable.einsteinium_icon);
+        } else if (mCrypto.contains("(QWARK)")) {
+            setIcon(R.drawable.qwark_icon);
+        } else if (mCrypto.contains("(NDC)")) {
+            setIcon(R.drawable.neverdie_icon);
+        } else if (mCrypto.contains("(GRS)")) {
+            setIcon(R.drawable.groestlcoin_icon);
+        } else if (mCrypto.contains("(PZM)")) {
+            setIcon(R.drawable.prizm_icon);
+        } else if (mCrypto.contains("(HEAT)")) {
+            setIcon(R.drawable.heat_icon);
+        } else if (mCrypto.contains("(VRC)")) {
+            setIcon(R.drawable.vericoin_icon);
+        } else if (mCrypto.contains("(CADASTRAL)")) {
+            setIcon(R.drawable.bitland_icon);
+        } else if (mCrypto.contains("(XBC)")) {
+            setIcon(R.drawable.bitcoinplus_icon);
+        } else if (mCrypto.contains("(SIGT)")) {
+            setIcon(R.drawable.signatum_icon);
         }
         else {
             mIconImageView.setImageDrawable(null);

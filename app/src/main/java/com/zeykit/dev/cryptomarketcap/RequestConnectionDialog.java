@@ -20,7 +20,7 @@ public class RequestConnectionDialog extends DialogFragment {
         final View dialogView = inflater.inflate(R.layout.request_connection_layout, null);
         builder.setView(dialogView);
 
-        Button gotItButton = (Button) dialogView.findViewById(R.id.connectionGotItButton);
+        Button gotItButton = dialogView.findViewById(R.id.connectionGotItButton);
         gotItButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

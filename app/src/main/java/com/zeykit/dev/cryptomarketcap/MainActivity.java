@@ -2,6 +2,7 @@ package com.zeykit.dev.cryptomarketcap;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,12 +31,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.kobakei.ratethisapp.RateThisApp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +63,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private boolean isRunning = false;        // Used to check if app is running (to prevent DialogProgress error)
     private boolean canRefresh = false;       // Used with autoRefresh function
-    private boolean isFirstLaunch = true;     // If is first launch, app will retrieve data
+    boolean canShowChangeLog;                 // Check if change-log have already been displayed
+    boolean isFirstLaunch = true;             // If is first launch, app will retrieve data
+    private int refreshCount = 0;
     static boolean justClosedDialog = false;  // Check if user has closed MoreAboutCryptoDialog. If true, app don't retrieve data
     static boolean needToBeRefreshed = false; // Used to refresh when user has left the settings panel
 
@@ -101,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         init();
         setupToolbar();
         setupRecyclerView();
-        rateMyApp();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -120,7 +123,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         config.setYesButtonText(R.string.rta_yes);
         config.setNoButtonText(R.string.rta_no);
         config.setCancelButtonText(R.string.rta_cancel);
+        config.setCancelMode(RateThisApp.Config.CANCEL_MODE_BACK_KEY);
         RateThisApp.init(config);
+        RateThisApp.showRateDialogIfNeeded(activityMain.getContext(), R.style.AlertDialog);
     }
 
     /**
@@ -159,10 +164,41 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         isRunning = true;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        canShowChangeLog = sharedPreferences.getBoolean("can_display_change_log_2", true);
+
+        if (canShowChangeLog) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialog);
+            builder.setMessage(getString(R.string.change_log_content))
+                    .setTitle(getString(R.string.change_log_title))
+                    .setPositiveButton(getString(R.string.got_it), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialogInterface) {
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putBoolean("can_display_change_log_2", false);
+                            editor.apply();
+                        }
+                    })
+                    .setCancelable(false);
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+
+        if (keepScreenTurnedOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
 
         boolean connectionEnabled = haveNetworkConnectionV2(getApplicationContext());
 
         mRunningActivity = this.getClass().getSimpleName();
+
 
         // Check for permissions
         if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -324,8 +360,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 startActivity(pinnedIntent);
                 break;
             case R.id.action_about:
-                /*AboutDialog aboutDialog = new AboutDialog();
-                aboutDialog.show(getSupportFragmentManager(), null);*/
                 Intent aboutIntent = new Intent(getApplicationContext(), AboutLayoutActivity.class);
                 startActivity(aboutIntent);
                 break;
@@ -458,13 +492,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                             String.valueOf(c1) +
                                             String.valueOf(c2) +
                                             "." + String.valueOf(c3) +
-                                            " Md";
+                                            " " + getString(R.string.billion);
                                 } else {
                                     marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             "." +
                                             String.valueOf(c2) +
-                                            " Md";
+                                            " " + getString(R.string.billion);
                                 }
                                 break;
                             case "EUR":
@@ -472,44 +506,84 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 c0 = _marketCap.charAt(0);
                                 c1 = _marketCap.charAt(2);
                                 c2 = _marketCap.charAt(3);
-                                marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
-                                        String.valueOf(c1) +
-                                        "." +
-                                        String.valueOf(c2) +
-                                        " Md";
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
                                 break;
                             case "GBP":
                                 _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_GBP);
                                 c0 = _marketCap.charAt(0);
                                 c1 = _marketCap.charAt(2);
                                 c2 = _marketCap.charAt(3);
-                                marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
-                                        String.valueOf(c1) +
-                                        "." +
-                                        String.valueOf(c2) +
-                                        " Md";
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
                                 break;
                             case "BTC":
                                 _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_BTC);
                                 c0 = _marketCap.charAt(0);
                                 c1 = _marketCap.charAt(2);
                                 c2 = _marketCap.charAt(3);
-                                marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
-                                        String.valueOf(c1) +
-                                        "." +
-                                        String.valueOf(c2) +
-                                        " M";
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
                                 break;
                             default:
                                 _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_USD);
                                 c0 = _marketCap.charAt(0);
                                 c1 = _marketCap.charAt(2);
                                 c2 = _marketCap.charAt(3);
-                                marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
-                                        String.valueOf(c1) +
-                                        "." +
-                                        String.valueOf(c2) +
-                                        " Md";
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
                                 break;
                         }
                     } catch (JSONException e) {
@@ -559,6 +633,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                 cryptoAdapterList.clear();
                 adapter.notifyDataSetChanged();
+
+                refreshCount++;
             }
         }
 
@@ -672,7 +748,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             if (swipeRefreshLayout != null)
                 swipeRefreshLayout.setRefreshing(false);
 
-            RateThisApp.showRateDialogIfNeeded(activityMain.getContext(), R.style.AlertDialog);
+            if (refreshCount > 1) {
+                rateMyApp();
+            }
         }
     }
 
@@ -749,5 +827,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private String arraySizeToDisplay() {
         return sharedPreferences.getString("array_size", "100");
+    }
+
+    private boolean canDisplayChangeLog() {
+        return sharedPreferences.getBoolean("can_display_change_log_2", true);
+    }
+
+    private boolean keepScreenTurnedOn() {
+        return sharedPreferences.getBoolean("always_on_screen", true);
     }
 }
