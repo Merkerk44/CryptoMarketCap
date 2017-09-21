@@ -5,7 +5,7 @@
         android:title="@string/data_settings_title">
 
         <EditTextPreference
-            android:defaultValue="100"
+            android:defaultValue="200"
             android:key="array_size"
             android:selectAllOnFocus="true"
             android:singleLine="true"
@@ -14,7 +14,7 @@
             android:summary="@string/array_size_summary"/>
 
         <ListPreference
-            android:defaultValue="USD"
+            android:defaultValue="@string/usd"
             android:entries="@array/currencies_list"
             android:entryValues="@array/currencies_list"
             android:key="currency_list_preference"
@@ -22,7 +22,7 @@
             android:summary="@string/currency_list_summary"/>
 
         <ListPreference
-            android:defaultValue="7 days"
+            android:defaultValue="@string/seven_day"
             android:entries="@array/chart_history_list"
             android:entryValues="@array/chart_history_list"
             android:key="chart_history_preference"
@@ -37,10 +37,22 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/chart_preference">
+
+        <ListPreference
+            android:defaultValue="@string/horizontal"
+            android:entries="@array/chart_line_list"
+            android:entryValues="@array/chart_line_list"
+            android:key="chart_line_preference"
+            android:title="@string/chart_line_title"
+            android:summary="@string/chart_line_summary"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/launching_preference">
 
         <ListPreference
-            android:defaultValue="Main Activity"
+            android:defaultValue="@string/main_activity"
             android:entries="@array/activities_list"
             android:entryValues="@array/activities_list"
             android:key="launching_preference"

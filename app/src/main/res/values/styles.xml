@@ -1,5 +1,5 @@
 <resources>
-
+    <color name="spots_dialog_color">@color/light_green</color>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="titleTextColor">@android:color/white</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -48,7 +48,7 @@
     <style name="CustomProgressDialog" parent="Base.Theme.AppCompat.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
         <item name="DialogTitleText">@string/receiving_data</item>
-        <item name="DialogSpotColor">#33CCFF</item>
+        <item name="DialogSpotColor">@color/light_green</item>
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="DialogSpotCount">8</item>
     </style>

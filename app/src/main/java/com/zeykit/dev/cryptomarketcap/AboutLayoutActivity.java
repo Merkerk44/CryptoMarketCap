@@ -54,16 +54,20 @@ public class AboutLayoutActivity extends AppCompatActivity {
         adapterList.add(2, mAdapter);
         mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.eth_icon), getString(R.string.eth));
         adapterList.add(3, mAdapter);
-        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.zcash_icon), getString(R.string.zec));
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ubiq_logo), getString(R.string.ubiq));
         adapterList.add(4, mAdapter);
-        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_share), getString(R.string.share));
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.zcash_icon), getString(R.string.zec));
         adapterList.add(5, mAdapter);
-        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_rate), getString(R.string.rate));
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_share), getString(R.string.share));
         adapterList.add(6, mAdapter);
-        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_bug), getString(R.string.report_a_bug));
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_rate), getString(R.string.rate));
         adapterList.add(7, mAdapter);
-        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_github), getString(R.string.github));
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_bug), getString(R.string.report_a_bug));
         adapterList.add(8, mAdapter);
+        mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_github), getString(R.string.github));
+        adapterList.add(9, mAdapter);
+        //mAdapter = new AboutLayoutAdapter(getResources().getDrawable(R.drawable.ic_how_to_use), getString(R.string.how_to_use));
+        //adapterList.add(9, mAdapter);
 
         adapter = new AboutLayoutRvAdapter(adapterList);
         recyclerView.setAdapter(adapter);

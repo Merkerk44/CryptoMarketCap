@@ -27,9 +27,10 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
     private interface CRYPTO_ADDR {
         String BTC = "1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG";
         String ETH = "0xDD353AF332EB94148949a3725871649B1a491147";
-        String ETC = "0x070beae2fd4ba17e354600938d853f71efc97f88";
+        //String ETC = "0x070beae2fd4ba17e354600938d853f71efc97f88";
         String ZEC = "t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA";
-        String SC = "b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7";
+        String UBIQ = "0xF46c44b99a53cd05E9b480B2D643991911FDcA2a";
+        //String SC = "b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7";
     }
 
     public AboutLayoutViewHolder(View view) {
@@ -66,22 +67,27 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
                 showSnackBar(rootView, str1, Snackbar.LENGTH_SHORT);
                 break;
             case 4:
+                copyToClipboard(CRYPTO_ADDR.UBIQ);
+                String str4 = "UBIQ " + context.getString(R.string.copied_to_clipboard) + ". " + context.getString(R.string.thanks_for_support);
+                showSnackBar(rootView, str4, Snackbar.LENGTH_SHORT);
+                break;
+            case 5:
                 copyToClipboard(CRYPTO_ADDR.ZEC);
                 String str2 = "ZEC " + context.getString(R.string.copied_to_clipboard) + ". " + context.getString(R.string.thanks_for_support);
                 showSnackBar(rootView, str2, Snackbar.LENGTH_SHORT);
                 break;
-            case 5:
+            case 6:
                 String str3 = context.getString(R.string.share_content)
                                                     + " : https://play.google.com/store/apps/details?id=" + context.getApplicationContext().getPackageName();
                 shareTheApp(str3);
                 break;
-            case 6:
+            case 7:
                 openAppPage();
                 break;
-            case 7:
+            case 8:
                 reportBug();
                 break;
-            case 8:
+            case 9:
                 openGitHub();
                 break;
             default:
@@ -93,6 +99,21 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
         mIcon.setImageDrawable(adapter.getIcon());
         mText.setText(adapter.getText());
     }
+
+    //private void howToUse() {
+    //    AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialog);
+    //    builder.setMessage(context.getString(R.string.how_to_use))
+    //            .setTitle(context.getString(R.string.how_to_use))
+    //            .setPositiveButton(context.getString(R.string.got_it), new DialogInterface.OnClickListener() {
+    //                @Override
+    //                public void onClick(DialogInterface dialogInterface, int i) {
+    //                    dialogInterface.dismiss();
+    //                }
+    //            })
+    //            .setCancelable(true);
+    //    AlertDialog alertDialog = builder.create();
+    //    alertDialog.show();
+    //}
 
     /**
      * Open Zeykit-Dev Google Play developer page
@@ -113,27 +134,27 @@ public class AboutLayoutViewHolder extends RecyclerView.ViewHolder implements Vi
         }
     }
 
-    private void openDonateBitcoin() {
-        Uri uri = Uri.parse("https://blockchain.info/address/1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG");
-        Intent openDonateBitcoin = new Intent(Intent.ACTION_VIEW, uri);
+    //private void openDonateBitcoin() {
+    //    Uri uri = Uri.parse("https://blockchain.info/address/1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG");
+    //    Intent openDonateBitcoin = new Intent(Intent.ACTION_VIEW, uri);
+    //
+    //    try {
+    //        context.startActivity(openDonateBitcoin);
+    //    } catch (ActivityNotFoundException e) {
+    //        Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
+    //    }
+    //}
 
-        try {
-            context.startActivity(openDonateBitcoin);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void openDonateEth() {
-        Uri uri = Uri.parse("https://www.etherchain.org/account/0xDD353AF332EB94148949a3725871649B1a491147#txsent");
-        Intent openDonateEth = new Intent(Intent.ACTION_VIEW, uri);
-
-        try {
-            context.startActivity(openDonateEth);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
-        }
-    }
+    //private void openDonateEth() {
+    //    Uri uri = Uri.parse("https://www.etherchain.org/account/0xDD353AF332EB94148949a3725871649B1a491147#txsent");
+    //    Intent openDonateEth = new Intent(Intent.ACTION_VIEW, uri);
+    //
+    //    try {
+    //        context.startActivity(openDonateEth);
+    //    } catch (ActivityNotFoundException e) {
+    //        Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
+    //    }
+    //}
 
     /**
      * Open LaBaleine's website

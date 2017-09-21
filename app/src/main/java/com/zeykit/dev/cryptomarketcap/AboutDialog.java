@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,9 +25,9 @@ public class AboutDialog extends DialogFragment {
     private TextView joinCommunityTextView;
     private TextView btcTextView;
     private TextView ethTextView;
-    private TextView etcTextView;
     private TextView zecTextView;
-    private TextView scTextView;
+    //private TextView scTextView;
+    //private TextView etcTextView;
     private TextView checkForUpdateTextView;
     private Button gotItButton;
 
@@ -34,12 +35,14 @@ public class AboutDialog extends DialogFragment {
 
     private View rootView;
 
+    LinearLayout aboutLayout;
+
     private interface CRYPTO_ADDR {
         String BTC = "1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG";
         String ETH = "0xDD353AF332EB94148949a3725871649B1a491147";
-        String ETC = "0x070beae2fd4ba17e354600938d853f71efc97f88";
+        //String ETC = "0x070beae2fd4ba17e354600938d853f71efc97f88";
         String ZEC = "t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA";
-        String SC = "b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7";
+        //String SC = "b9a7625b96f1af146b24de8fd485d161432eb47f68938fcf4f041de9f440f19efebdeea3fbc7";
     }
 
     @NonNull
@@ -48,7 +51,7 @@ public class AboutDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.about_layout, null);
+        final View dialogView = inflater.inflate(R.layout.about_layout, aboutLayout, false);
         builder.setView(dialogView);
 
         init(dialogView);
@@ -119,13 +122,15 @@ public class AboutDialog extends DialogFragment {
      * @param view View
      */
     private void init(View view) {
-        developerTextView = (TextView) view.findViewById(R.id.developerTextView);
-        joinCommunityTextView = (TextView) view.findViewById(R.id.joinCommunityTextView);
-        btcTextView = (TextView) view.findViewById(R.id.btcTextView);
-        ethTextView = (TextView) view.findViewById(R.id.ethTextView);
-        zecTextView = (TextView) view.findViewById(R.id.zecTextView);
-        checkForUpdateTextView = (TextView) view.findViewById(R.id.checkForUpdateTextView);
-        gotItButton = (Button) view.findViewById(R.id.aboutGotItButton);
+        developerTextView = view.findViewById(R.id.developerTextView);
+        joinCommunityTextView = view.findViewById(R.id.joinCommunityTextView);
+        btcTextView = view.findViewById(R.id.btcTextView);
+        ethTextView = view.findViewById(R.id.ethTextView);
+        zecTextView = view.findViewById(R.id.zecTextView);
+        checkForUpdateTextView = view.findViewById(R.id.checkForUpdateTextView);
+        gotItButton = view.findViewById(R.id.aboutGotItButton);
+
+        aboutLayout = view.findViewById(R.id.aboutLayout);
 
         rootView = getActivity().getWindow().getDecorView().findViewById(R.id.activity_main);
 

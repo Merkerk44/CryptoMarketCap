@@ -11,6 +11,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+        MainActivity.needToBeRefreshed = true;
     }
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -29,11 +30,5 @@ public class SettingsActivity extends AppCompatActivity {
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        MainActivity.needToBeRefreshed = true;
     }
 }

@@ -10,13 +10,13 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,15 +69,33 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private int refreshCount = 0;
     static boolean justClosedDialog = false;  // Check if user has closed MoreAboutCryptoDialog. If true, app don't retrieve data
     static boolean needToBeRefreshed = false; // Used to refresh when user has left the settings panel
+    static boolean priceRetrieved = false;    // Check if prices from Api Fixer are retrieved
 
-    static LinearLayout activityMain;
+    LinearLayout activityMain;
     private Toolbar mToolbar;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
     private SharedPreferences sharedPreferences = null;
+    SpotsDialog progressDialog;
 
     private List<CryptoAdapter> cryptoAdapterList;
     private CryptoRvAdapter adapter;
+
+    static String convertEur = "0.86";
+    static String convertGbp = "0.78";
+    static String convertCad = "1.2481";
+    static String convertJpy = "108.62";
+    static String convertAud = "1.2602";
+    static String convertChf = "0.95854";
+    static String convertInr = "63.784";
+    static String convertBrl = "3.0892";
+    static String convertPln = "3.5269";
+    static String convertCny = "6.5752";
+    static String convertSek = "7.94";
+    static String convertNzd = "1.3556";
+    static String convertMxn = "17.752";
+    static String convertSgd = "1.3432";
+    static String convertHkd = "7.8011";
 
     private interface TAG {
         String NAME = "name";
@@ -85,17 +104,81 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         String PRICE_EUR = "price_eur";
         String PRICE_GBP = "price_gbp";
         String PRICE_BTC = "price_btc";
+        String PRICE_CAD = "price_cad";
+        String PRICE_JPY = "price_jpy";
+        String PRICE_AUD = "price_aud";
+        String PRICE_CHF = "price_chf";
+        String PRICE_INR = "price_inr";
+        String PRICE_BRL = "price_brl";
+        String PRICE_PLN = "price_pln";
+        String PRICE_CNY = "price_cny";
+        String PRICE_SEK = "price_sek";
+        String PRICE_NZD = "price_nzd";
+        String PRICE_MXN = "price_mxn";
+        String PRICE_SGD = "price_sgd";
+        String PRICE_HKD = "price_hkd";
         String PERCENT_CHANGE_24H = "percent_change_24h";
         String TOTAL_MARKET_CAP_USD = "total_market_cap_usd";
         String TOTAL_MARKET_CAP_EUR = "total_market_cap_eur";
         String TOTAL_MARKET_CAP_GBP = "total_market_cap_gbp";
         String TOTAL_MARKET_CAP_BTC = "total_market_cap_btc";
+        String TOTAL_MARKET_CAP_CAD = "total_market_cap_cad";
+        String TOTAL_MARKET_CAP_JPY = "total_market_cap_jpy";
+        String TOTAL_MARKET_CAP_AUD = "total_market_cap_aud";
+        String TOTAL_MARKET_CAP_CHF = "total_market_cap_chf";
+        String TOTAL_MARKET_CAP_INR = "total_market_cap_inr";
+        String TOTAL_MARKET_CAP_BRL = "total_market_cap_brl";
+        String TOTAL_MARKET_CAP_PLN = "total_market_cap_pln";
+        String TOTAL_MARKET_CAP_CNY = "total_market_cap_cny";
+        String TOTAL_MARKET_CAP_SEK = "total_market_cap_sek";
+        String TOTAL_MARKET_CAP_NZD = "total_market_cap_nzd";
+        String TOTAL_MARKET_CAP_MXN = "total_market_cap_mxn";
+        String TOTAL_MARKET_CAP_SGD = "total_market_cap_sgd";
+        String TOTAL_MARKET_CAP_HKD = "total_market_cap_hkd";
+        String USD = "USD";
+        String EUR = "EUR";
+        String GBP = "GBP";
+        String CAD = "CAD";
+        String JPY = "JPY";
+        String AUD = "AUD";
+        String CHF = "CHF";
+        String INR = "INR";
+        String BRL = "BRL";
+        String PLN = "PLN";
+        String CNY = "CNY";
+        String SEK = "SEK";
+        String NZD = "NZD";
+        String MXN = "MXN";
+        String SGD = "SGD";
+        String HKD = "HKD";
+    }
+
+    private interface SYMBOL {
+        String USD = "$";
+        String EUR = "€";
+        String GBP = "£";
+        String BTC = "฿";
+        String CAD = "C$";
+        String JPY = "¥";
+        String AUD = "A$";
+        String CHF = "Fr";
+        String INR = "₹";
+        String BRL = "R$";
+        String PLN = "zł";
+        String CNY = "元";
+        String SEK = "kr";
+        String NZD = "NZ$";
+        String MXN = "$";
+        String SGD = "S$";
+        String HKD = "HK$";
     }
 
     private interface PERMISSIONS {
         int REQUEST_NETWORK_STATE = 0x1;
         int REQUEST_INTERNET = 0x2;
     }
+
+    static String btcPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mToolbar = findViewById(R.id.toolbar);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         recyclerView = findViewById(R.id.recyclerView);
+        progressDialog = new SpotsDialog(activityMain.getContext(), R.style.CustomProgressDialog);
     }
 
     /**
@@ -164,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         isRunning = true;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        canShowChangeLog = sharedPreferences.getBoolean("can_display_change_log_2", true);
+        canShowChangeLog = sharedPreferences.getBoolean("can_display_change_log_5", true);
 
         if (canShowChangeLog) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialog);
@@ -180,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         @Override
                         public void onDismiss(DialogInterface dialogInterface) {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putBoolean("can_display_change_log_2", false);
+                            editor.putBoolean("can_display_change_log_5", false);
                             editor.apply();
                         }
                     })
@@ -229,7 +313,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             } else {
                 if (connectionEnabled) {
                     if (isFirstLaunch && !justClosedDialog) {
-                        new JSONParse().execute();
                         new JSONGlobal().execute();
                     }
                 } else {
@@ -295,9 +378,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         if (needToBeRefreshed) {
             needToBeRefreshed = false;
-            cryptoAdapterList.clear();
-            adapter.notifyDataSetChanged();
-            new JSONParse().execute();
+            new JSONGlobal().execute();
         }
     }
 
@@ -327,29 +408,39 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         inflater.inflate(R.menu.menu, menu);
 
         final MenuItem item = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        final SearchView searchView = (SearchView) item.getActionView();
 
         // Setting up the searchView style
-        searchView.setQueryHint(Html.fromHtml("<font color = #373839>" + getResources().getString(R.string.search_hint) + "</font>"));
+        searchView.setQueryHint(fromHtml("<font color = #373839>" + getResources().getString(R.string.search_hint) + "</font>"));
         SearchView.SearchAutoComplete textArea = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         textArea.setTextColor(Color.WHITE);
         searchView.setOnQueryTextListener(this);
 
-        MenuItemCompat.setOnActionExpandListener(item,
-                new MenuItemCompat.OnActionExpandListener() {
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                        return true;
-                    }
+        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
 
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                        adapter.setFilter(cryptoAdapterList);
-                        return true;
-                    }
-                });
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                adapter.setFilter(cryptoAdapterList);
+                return true;
+            }
+        });
 
         return true;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html) {
+        Spanned result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            result = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            result = Html.fromHtml(html);
+        }
+        return result;
     }
 
     @Override
@@ -447,8 +538,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     reader = new BufferedReader(new InputStreamReader(stream));
 
                     buffer = new StringBuffer();
-                    String line = "";
 
+                    String line;
                     while ((line = reader.readLine()) != null) {
                         String append = line + "\n";
                         buffer.append(append);
@@ -475,8 +566,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 if (result != null) {
                     try {
                         JSONObject jObj = new JSONObject(result);
-                        String _marketCap = "";
-                        char c0, c1, c2, c3 = 'c';
+                        String _marketCap;
+                        char c0, c1, c2, c3, c4;
 
                         String currency = getDefaultCurrency();
                         switch (currency) {
@@ -488,13 +579,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 c3 = _marketCap.charAt(4);
 
                                 if (_marketCap.contains("E11")) {
-                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.USD + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             String.valueOf(c2) +
                                             "." + String.valueOf(c3) +
                                             " " + getString(R.string.billion);
                                 } else {
-                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.USD + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             "." +
                                             String.valueOf(c2) +
@@ -509,13 +600,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 c3 = _marketCap.charAt(4);
 
                                 if (_marketCap.contains("E11")) {
-                                    marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.EUR + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             String.valueOf(c2) +
                                             "." + String.valueOf(c3) +
                                             " " + getString(R.string.billion);
                                 } else {
-                                    marketCap = getString(R.string.total_market_cap) + " : €" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.EUR + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             "." +
                                             String.valueOf(c2) +
@@ -530,13 +621,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 c3 = _marketCap.charAt(4);
 
                                 if (_marketCap.contains("E11")) {
-                                    marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.GBP + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             String.valueOf(c2) +
                                             "." + String.valueOf(c3) +
                                             " " + getString(R.string.billion);
                                 } else {
-                                    marketCap = getString(R.string.total_market_cap) + " : £" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.GBP + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             "." +
                                             String.valueOf(c2) +
@@ -551,18 +642,255 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 c3 = _marketCap.charAt(4);
 
                                 if (_marketCap.contains("E11")) {
-                                    marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.BTC + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             String.valueOf(c2) +
                                             "." + String.valueOf(c3) +
                                             " " + getString(R.string.billion);
                                 } else {
-                                    marketCap = getString(R.string.total_market_cap) + " : ฿" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.BTC + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             "." +
                                             String.valueOf(c2) +
                                             " " + getString(R.string.billion);
                                 }
+                                break;
+                            case "CAD":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_CAD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.CAD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.CAD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "JPY":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_JPY);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+                                c4 = _marketCap.charAt(5);
+
+                                marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.JPY + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        String.valueOf(c2) +
+                                        String.valueOf(c3) +
+                                        String.valueOf(c4) +
+                                        " " + getString(R.string.billion);
+                                break;
+                            case "AUD":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_AUD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.AUD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.AUD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "CHF":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_CHF);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.CHF + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.CHF + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "INR":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_INR);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+                                c4 = _marketCap.charAt(5);
+
+                                marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.INR + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        String.valueOf(c2) +
+                                        String.valueOf(c3) +
+                                        String.valueOf(c4) +
+                                        " " + getString(R.string.billion);
+                                break;
+                            case "BRL":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_BRL);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.BRL + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.BRL + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "PLN":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_PLN);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.PLN + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.PLN + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "CNY":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_CNY);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.CNY + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.CNY + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "SEK":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_SEK);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.SEK + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        String.valueOf(c2) +
+                                        String.valueOf(c3) +
+                                        " " + getString(R.string.billion);
+                                break;
+                            case "NZD":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_NZD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.NZD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.NZD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "MXN":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_MXN);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.MXN + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        String.valueOf(c2) +
+                                        String.valueOf(c3) +
+                                        " " + getString(R.string.billion);
+                                break;
+                            case "SGD":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_SGD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                if (_marketCap.contains("E11")) {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.SGD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            String.valueOf(c2) +
+                                            "." + String.valueOf(c3) +
+                                            " " + getString(R.string.billion);
+                                } else {
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.SGD + String.valueOf(c0) +
+                                            String.valueOf(c1) +
+                                            "." +
+                                            String.valueOf(c2) +
+                                            " " + getString(R.string.billion);
+                                }
+                                break;
+                            case "HKD":
+                                _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_HKD);
+                                c0 = _marketCap.charAt(0);
+                                c1 = _marketCap.charAt(2);
+                                c2 = _marketCap.charAt(3);
+                                c3 = _marketCap.charAt(4);
+
+                                marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.HKD + String.valueOf(c0) +
+                                        String.valueOf(c1) +
+                                        String.valueOf(c2) +
+                                        String.valueOf(c3) +
+                                        " " + getString(R.string.billion);
                                 break;
                             default:
                                 _marketCap = jObj.getString(TAG.TOTAL_MARKET_CAP_USD);
@@ -572,13 +900,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 c3 = _marketCap.charAt(4);
 
                                 if (_marketCap.contains("E11")) {
-                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.USD + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             String.valueOf(c2) +
                                             "." + String.valueOf(c3) +
                                             " " + getString(R.string.billion);
                                 } else {
-                                    marketCap = getString(R.string.total_market_cap) + " : $" + String.valueOf(c0) +
+                                    marketCap = getString(R.string.total_market_cap) + " : " + SYMBOL.USD + String.valueOf(c0) +
                                             String.valueOf(c1) +
                                             "." +
                                             String.valueOf(c2) +
@@ -591,7 +919,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     }
 
                     Snackbar.make(activityMain, marketCap, Snackbar.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
                 }
+
+                new JSONParse().execute();
             }
         }
     }
@@ -602,8 +934,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         private String defaultCurrency = getDefaultCurrency();
         private final String urlAddress = "https://api.coinmarketcap.com/v1/ticker/?convert=" + defaultCurrency + "&limit=" + arraySizeToDisplay();
-
-        private SpotsDialog progressDialog;
 
         private CryptoAdapter cryptoAdapter = new CryptoAdapter();
         private JSONObject jObj;
@@ -626,14 +956,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 swipeRefreshLayout.setRefreshing(false);
 
             if (connectionEnabled) {
-                progressDialog = new SpotsDialog(activityMain.getContext(), R.style.CustomProgressDialog);
-
-                if (isRunning)
+                if (!progressDialog.isShowing())
                     progressDialog.show();
 
-                cryptoAdapterList.clear();
-                adapter.notifyDataSetChanged();
-
+                if (!cryptoAdapterList.isEmpty()) {
+                    cryptoAdapterList.clear();
+                    adapter.notifyDataSetChanged();
+                }
                 refreshCount++;
             }
         }
@@ -662,8 +991,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         reader = new BufferedReader(new InputStreamReader(stream));
 
                         buffer = new StringBuffer();
-                        String line = "";
 
+                        String line;
                         while ((line = reader.readLine()) != null) {
                             String append = line + "\n";
                             buffer.append(append);
@@ -707,16 +1036,58 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                             switch (defaultCurrency) {
                                 case "USD":
-                                    price = "$" + jObj.getString(TAG.PRICE_USD);
+                                    price = SYMBOL.USD + jObj.getString(TAG.PRICE_USD);
                                     break;
                                 case "EUR":
-                                    price = "€" + jObj.getString(TAG.PRICE_EUR);
+                                    price = SYMBOL.EUR + jObj.getString(TAG.PRICE_EUR);
                                     break;
                                 case "GBP":
-                                    price = "£" + jObj.getString(TAG.PRICE_GBP);
+                                    price = SYMBOL.GBP + jObj.getString(TAG.PRICE_GBP);
                                     break;
                                 case "BTC":
-                                    price = "฿" + jObj.getString(TAG.PRICE_BTC);
+                                    price = SYMBOL.BTC + jObj.getString(TAG.PRICE_BTC);
+                                    break;
+                                case "CAD":
+                                    price = SYMBOL.CAD + jObj.getString(TAG.PRICE_CAD);
+                                    break;
+                                case "JPY":
+                                    price = SYMBOL.JPY + jObj.getString(TAG.PRICE_JPY);
+                                    break;
+                                case "AUD":
+                                    price = SYMBOL.AUD + jObj.getString(TAG.PRICE_AUD);
+                                    break;
+                                case "CHF":
+                                    price = SYMBOL.CHF + jObj.getString(TAG.PRICE_CHF);
+                                    break;
+                                case "INR":
+                                    price = SYMBOL.INR + jObj.getString(TAG.PRICE_INR);
+                                    break;
+                                case "BRL":
+                                    price = SYMBOL.BRL + jObj.getString(TAG.PRICE_BRL);
+                                    break;
+                                case "PLN":
+                                    price = SYMBOL.PLN + jObj.getString(TAG.PRICE_PLN);
+                                    break;
+                                case "CNY":
+                                    price = SYMBOL.CNY + jObj.getString(TAG.PRICE_CNY);
+                                    break;
+                                case "SEK":
+                                    price = SYMBOL.SEK + jObj.getString(TAG.PRICE_SEK);
+                                    break;
+                                case "NZD":
+                                    price = SYMBOL.NZD + jObj.getString(TAG.PRICE_NZD);
+                                    break;
+                                case "MXN":
+                                    price = SYMBOL.MXN + jObj.getString(TAG.PRICE_MXN);
+                                    break;
+                                case "SGD":
+                                    price = SYMBOL.SGD + jObj.getString(TAG.PRICE_SGD);
+                                    break;
+                                case "HKD":
+                                    price = SYMBOL.HKD + jObj.getString(TAG.PRICE_HKD);
+                                    break;
+                                default:
+                                    price = SYMBOL.USD + jObj.getString(TAG.PRICE_USD);
                                     break;
                             }
 
@@ -727,10 +1098,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             cryptoAdapterList.add(i, cryptoAdapter);
 
                             adapter.notifyDataSetChanged();
+
+                            if (i == 0) {
+                                btcPrice = jObj.getString(TAG.PRICE_USD);
+                                Log.d(_TAG, btcPrice);
+                            }
                         }
                     } catch (JSONException | NullPointerException e) {
                         e.printStackTrace();
                     }
+
                 } else {
                     Toast.makeText(getApplicationContext(), getString(R.string.something_goes_wrong), Toast.LENGTH_SHORT).show();
                 }
@@ -742,7 +1119,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             } catch (IllegalArgumentException e){
                 e.printStackTrace();
-                progressDialog = null;
             }
 
             if (swipeRefreshLayout != null)
@@ -750,6 +1126,88 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             if (refreshCount > 1) {
                 rateMyApp();
+            }
+
+            if (!priceRetrieved) {
+                new JSONPrice().execute();
+                priceRetrieved = true;
+            }
+
+            isFirstLaunch = false;
+        }
+    }
+
+    private class JSONPrice extends AsyncTask<String, String, String> {
+
+        private final String urlAddress = "http://api.fixer.io/latest?base=USD";
+        StringBuffer buffer;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        protected String doInBackground(String... params) {
+
+            HttpURLConnection connection;
+            BufferedReader reader;
+
+            try {
+                URL url = new URL(urlAddress);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                buffer = new StringBuffer();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String append = line + "\n";
+                    buffer.append(append);
+                }
+
+                connection.disconnect();
+                reader.close();
+                stream.close();
+
+                return buffer.toString();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                try {
+                    JSONObject jObj = new JSONObject(result);
+                    JSONObject rates = jObj.getJSONObject("rates");
+
+                    convertEur = rates.getString(TAG.EUR);
+                    convertGbp = rates.getString(TAG.GBP);
+                    convertCad = rates.getString(TAG.CAD);
+                    convertJpy = rates.getString(TAG.JPY);
+                    convertAud = rates.getString(TAG.AUD);
+                    convertChf = rates.getString(TAG.CHF);
+                    convertInr = rates.getString(TAG.INR);
+                    convertBrl = rates.getString(TAG.BRL);
+                    convertPln = rates.getString(TAG.PLN);
+                    convertCny = rates.getString(TAG.CNY);
+                    convertSek = rates.getString(TAG.SEK);
+                    convertNzd = rates.getString(TAG.NZD);
+                    convertMxn = rates.getString(TAG.MXN);
+                    convertSgd = rates.getString(TAG.SGD);
+                    convertHkd = rates.getString(TAG.HKD);
+
+                    Log.d(_TAG, "Object: " + jObj.toString() + "\nRates: " + rates.toString() + "\nEur: " + convertEur + "\nGbp: " + convertGbp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -826,14 +1284,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private String arraySizeToDisplay() {
-        return sharedPreferences.getString("array_size", "100");
-    }
-
-    private boolean canDisplayChangeLog() {
-        return sharedPreferences.getBoolean("can_display_change_log_2", true);
+        return sharedPreferences.getString("array_size", "200");
     }
 
     private boolean keepScreenTurnedOn() {
         return sharedPreferences.getBoolean("always_on_screen", true);
     }
+
+    //private float convertUsdTo(String usdValue, String exchangeRate) {
+    //    return Float.valueOf(usdValue) * Float.valueOf(exchangeRate);
+    //}
+
+    //private float convertUsdTo(float usdValue, float exchangeRate) {
+    //    return usdValue * exchangeRate;
+    //}
+
+    //private float convertUsdTo(String usdValue, float exchangeRate) {
+    //    return Float.valueOf(usdValue) * exchangeRate;
+    //}
+
+    //private float convertUsdTo(float usdValue, String exchangeRate) {
+    //    return usdValue * Float.valueOf(exchangeRate);
+    //}
 }

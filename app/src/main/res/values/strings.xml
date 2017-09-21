@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Crypto Market Cap</string>
     <string name="change_log_title">Change-log</string>
-    <string name="change_log_content">\nWelcome to Crypto Market Cap !\n\nCrypto Market Cap updated to v3.1.0 here\'s changes:\n\n• More visible data\n• High and low price in charts can now being converted in USD/EUR/GBP\n• New \"Always on screen\" function\n• Added \"Remove pinned coins list\" function\n• Better UI for charts\n• Added new icons and website for crypto-currencies\n• Additional bug fixes and performance improvements\n\nNote : for better user experience, make sure to read the \"How to use\" available at the app page\n\nThis app is fully free allowing to you to get the best from this app. If you like my job you can donating to my BTC/ETH or ZEC addresses available in \"About\" panel.\n\nPlease don\'t hesitate to contact zeykit.dev@gmail.com for any issues with the app (function available in the \"About\" panel).\n</string>
-    <string name="app_version">3.1.0</string>
-    <string name="splash_screen_ver">Zeykit-Dev - v3.1.0</string>
+    <string name="change_log_content">\nWelcome to Crypto Market Cap !\n\nCrypto Market Cap updated to v3.3.0 here\'s changes:\n\n• Added CNY/SEK/NZD/MXN/SGD/HKD currencies\n• Duplication\'s bug in pinned coins tab fixed\n• Additional bug fixes and performance improvements\n\nNote : for better user experience, make sure to read the \"How to use\" available at the app page\n\nThis app is fully free allowing to you to get the best from this app. If you like my job you can donating to my BTC/ETH or ZEC addresses available in \"About\" panel.\n\nPlease don\'t hesitate to contact zeykit.dev@gmail.com for any issues with the app (function available in the \"About\" panel).\n</string>
+    <string name="app_version">3.3.0</string>
+    <string name="splash_screen_ver">Zeykit-Dev - v3.3.0</string>
     <string name="action_search">Search</string>
     <string name="action_about">About</string>
     <string name="action_settings">Settings</string>
@@ -27,6 +27,7 @@
     <string name="btc">1JB1RS9UeYjUgZV2rJCuwWXK4fVKuJDnxG</string>
     <string name="eth">0xDD353AF332EB94148949a3725871649B1a491147</string>
     <string name="zec">t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
+    <string name="ubiq">0xF46c44b99a53cd05E9b480B2D643991911FDcA2a</string>
     <string name="eth_address">ETH : 0xDD353AF332EB94148949a3725871649B1a491147</string>
     <string name="etc_address">ETC : 0x070beae2fd4ba17e354600938d853f71efc97f88</string>
     <string name="zec_address">ZEC : t1LwjXxRFf8eNLcDRZS54A5ta3Q3tLbetnA</string>
@@ -39,7 +40,7 @@
     <string name="currency_list_title">Default currency</string>
     <string name="currency_list_summary">Choose the currency you want to be displayed</string>
     <string name="pinned_coins">Pinned coins</string>
-    <string name="array_size">Crypto-currencies array\'s size to display</string>
+    <string name="array_size">Crypto-currencies list size to display</string>
     <string name="array_size_summary">Define the number of crypto-currencies that will be displayed</string>
     <string name="price">Price</string>
     <string name="volume">24H Volume</string>
@@ -92,12 +93,43 @@
     <string name="no_dialog">NO</string>
     <string name="pinned_coins_list_removed">Pinned coins list has been list removed.</string>
     <string name="pinned_coins_list_empty">Pinned coins list is empty.</string>
+    <string name="close">CLOSE</string>
+    <string name="one_day">1 DAY</string>
+    <string name="seven_day">7 DAYS</string>
+    <string name="one_month">1 MONTH</string>
+    <string name="six_month">6 MONTH</string>
+    <string name="one_year">1 YEAR</string>
+    <string name="all_data">ALL DATA</string>
+    <string name="all_data_lower">All data</string>
+    <string name="main_activity">Main Activity</string>
+    <string name="usd">USD</string>
+    <string name="chart_preference">Chart preferences</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="vertical">Vertical</string>
+    <string name="horizontal_vertical">Horizontal and vertical</string>
+    <string name="none">None</string>
+    <string name="chart_line_title">Chart precision line</string>
+    <string name="chart_line_summary">Define what type of precision line you want to be displayed in chart</string>
+    <string name="how_to_use">How to use</string>
     
     <string-array name="currencies_list">
         <item>USD</item>
         <item>EUR</item>
         <item>GBP</item>
         <item>BTC</item>
+        <item>CAD</item>
+        <item>JPY</item>
+        <item>AUD</item>
+        <item>CHF</item>
+        <item>INR</item>
+        <item>BRL</item>
+        <item>PLN</item>
+        <item>CNY</item>
+        <item>SEK</item>
+        <item>NZD</item>
+        <item>MXN</item>
+        <item>SGD</item>
+        <item>HKD</item>
     </string-array>
 
     <string-array name="activities_list">
@@ -108,9 +140,16 @@
     <string-array name="chart_history_list">
         <item>1 day</item>
         <item>7 days</item>
-        <item>30 days</item>
-        <item>180 days</item>
-        <item>365 days</item>
+        <item>1 month</item>
+        <item>6 month</item>
+        <item>1 year</item>
         <item>All data</item>
+    </string-array>
+
+    <string-array name="chart_line_list">
+        <item>Horizontal</item>
+        <item>Vertical</item>
+        <item>Horizontal and vertical</item>
+        <item>None</item>
     </string-array>
 </resources>

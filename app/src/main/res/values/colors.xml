@@ -6,4 +6,6 @@
     <color name="gray">#A9A9A9</color>
     <color name="colorTitle">#CCCCCC</color>
     <color name="colorSummary">#727272</color>
+    <color name="lime">#00ff00</color>
+    <color name="light_green">#80ff80</color>
 </resources>
